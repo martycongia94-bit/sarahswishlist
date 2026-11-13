@@ -1,0 +1,470 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidSha256Id(id) {
+      return id is string && id.size() == 64 && id.matches('^[a-f0-9]{64}$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isBootstrappedOwner() {
+      return isVerifiedUser() && request.auth.token.email == 'martycongia94@gmail.com';
+    }
+
+    function isAdmin() {
+      return isVerifiedUser() && (
+        isBootstrappedOwner() ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidAdminUser(data, adminUid) {
+      return data.keys().hasAll(['uid', 'email', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'email', 'createdAt', 'updatedAt'])
+        && data.uid is string
+        && data.uid == adminUid
+        && data.uid.size() >= 1
+        && data.uid.size() <= 128
+        && data.email is string
+        && data.email.size() >= 3
+        && data.email.size() <= 160
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidAdminInvite(data) {
+      return data.keys().hasAll(['email', 'invitedByUid', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['email', 'invitedByUid', 'createdAt', 'updatedAt'])
+        && data.email is string
+        && data.email.size() >= 3
+        && data.email.size() <= 160
+        && data.invitedByUid is string
+        && data.invitedByUid == request.auth.uid
+        && data.invitedByUid.size() >= 1
+        && data.invitedByUid.size() <= 128
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidWishlistProduct(data, productId) {
+      return data.keys().hasAll([
+          'id', 'name', 'brand', 'category', 'store', 'url', 'image',
+          'descriptionIt', 'descriptionEn', 'descriptionRo',
+          'status', 'reservedUntil', 'received', 'sortOrder', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id', 'name', 'brand', 'category', 'store', 'url', 'image',
+          'descriptionIt', 'descriptionEn', 'descriptionRo',
+          'status', 'reservedUntil', 'received', 'sortOrder', 'createdAt', 'updatedAt'
+        ])
+        && data.id is string
+        && data.id == productId
+        && data.id.size() >= 1
+        && data.id.size() <= 128
+        && data.name is string
+        && data.name.size() >= 1
+        && data.name.size() <= 160
+        && data.brand is string
+        && data.brand.size() >= 1
+        && data.brand.size() <= 80
+        && data.category in ['funko', 'plush', 'gaming', 'streaming', 'accessories']
+        && data.store is string
+        && data.store.size() <= 80
+        && data.url is string
+        && data.url.size() <= 500
+        && (data.url == '' || data.url.matches('^https?://.*'))
+        && data.image is string
+        && data.image.size() <= 600
+        && (data.image == '' || data.image.matches('^(/products/|https?://).*'))
+        && data.descriptionIt is string
+        && data.descriptionIt.size() >= 1
+        && data.descriptionIt.size() <= 500
+        && data.descriptionEn is string
+        && data.descriptionEn.size() >= 1
+        && data.descriptionEn.size() <= 500
+        && data.descriptionRo is string
+        && data.descriptionRo.size() >= 1
+        && data.descriptionRo.size() <= 500
+        && data.status in ['available', 'reserved', 'purchase_declared', 'confirmed', 'received']
+        && (data.reservedUntil == null || data.reservedUntil is timestamp)
+        && data.received is bool
+        && data.sortOrder is number
+        && data.sortOrder >= 0
+        && data.sortOrder <= 10000
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidGiftReservation(data) {
+      return data.keys().hasAll([
+          'productId', 'productName', 'productStore', 'productUrl',
+          'status', 'buyerNote', 'reservedAt', 'expiresAt', 'declaredAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'productId', 'productName', 'productStore', 'productUrl',
+          'status', 'buyerNote', 'reservedAt', 'expiresAt', 'declaredAt', 'updatedAt'
+        ])
+        && isValidId(data.productId)
+        && data.productName is string
+        && data.productName.size() >= 1
+        && data.productName.size() <= 160
+        && data.productStore is string
+        && data.productStore.size() <= 80
+        && data.productUrl is string
+        && data.productUrl.size() <= 500
+        && (data.productUrl == '' || data.productUrl.matches('^https?://.*'))
+        && data.status in ['reserved', 'purchase_declared', 'confirmed', 'received', 'cancelled']
+        && data.buyerNote is string
+        && data.buyerNote.size() <= 240
+        && data.reservedAt is timestamp
+        && data.expiresAt is timestamp
+        && (data.declaredAt == null || data.declaredAt is timestamp)
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidReservationLock(data, productId) {
+      return data.keys().hasAll(['productId', 'reservationDocId', 'expiresAt', 'updatedAt'])
+        && data.keys().hasOnly(['productId', 'reservationDocId', 'expiresAt', 'updatedAt'])
+        && data.productId is string
+        && data.productId == productId
+        && isValidSha256Id(data.reservationDocId)
+        && data.expiresAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidPublicSettings(data) {
+      return data.keys().hasAll([
+          'amazonWishlistUrl', 'showAmazonWishlist',
+          'publicDeliveryNote', 'showPublicDeliveryNote',
+          'hideReceivedFromVisitors', 'updatedByUid', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'amazonWishlistUrl', 'showAmazonWishlist',
+          'publicDeliveryNote', 'showPublicDeliveryNote',
+          'hideReceivedFromVisitors', 'updatedByUid', 'updatedAt'
+        ])
+        && data.amazonWishlistUrl is string
+        && data.amazonWishlistUrl.size() <= 500
+        && (data.amazonWishlistUrl == '' || data.amazonWishlistUrl.matches('^https?://.*'))
+        && data.showAmazonWishlist is bool
+        && data.publicDeliveryNote is string
+        && data.publicDeliveryNote.size() <= 800
+        && data.showPublicDeliveryNote is bool
+        && data.hideReceivedFromVisitors is bool
+        && data.updatedByUid is string
+        && data.updatedByUid == request.auth.uid
+        && data.updatedByUid.size() >= 1
+        && data.updatedByUid.size() <= 128
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidPrivateDelivery(data) {
+      return data.keys().hasAll([
+          'recipientName', 'streetAddress', 'cityAndPostal', 'country',
+          'amazonLockerName', 'amazonLockerAddress', 'privateInstructions',
+          'updatedByUid', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'recipientName', 'streetAddress', 'cityAndPostal', 'country',
+          'amazonLockerName', 'amazonLockerAddress', 'privateInstructions',
+          'updatedByUid', 'updatedAt'
+        ])
+        && data.recipientName is string
+        && data.recipientName.size() <= 120
+        && data.streetAddress is string
+        && data.streetAddress.size() <= 250
+        && data.cityAndPostal is string
+        && data.cityAndPostal.size() <= 150
+        && data.country is string
+        && data.country.size() <= 80
+        && data.amazonLockerName is string
+        && data.amazonLockerName.size() <= 200
+        && data.amazonLockerAddress is string
+        && data.amazonLockerAddress.size() <= 250
+        && data.privateInstructions is string
+        && data.privateInstructions.size() <= 1000
+        && data.updatedByUid is string
+        && data.updatedByUid == request.auth.uid
+        && data.updatedByUid.size() >= 1
+        && data.updatedByUid.size() <= 128
+        && data.updatedAt is timestamp;
+    }
+
+    function hasValidInviteForCaller() {
+      return isVerifiedUser()
+        && exists(/databases/$(database)/documents/admin_invites/primary_sarah)
+        && get(/databases/$(database)/documents/admin_invites/primary_sarah).data.email == request.auth.token.email;
+    }
+
+    function isWindow24Hours(ts) {
+      return ts is timestamp
+        && ts > request.time + duration.value(23, 'h')
+        && ts <= request.time + duration.value(24, 'h') + duration.value(5, 'm');
+    }
+
+    match /admins/{adminUid} {
+      allow get: if isValidId(adminUid) && (
+        isAdmin() || (isVerifiedUser() && request.auth.uid == adminUid)
+      );
+      allow list: if false;
+      allow create: if isValidId(adminUid)
+        && isVerifiedUser()
+        && isValidAdminUser(incoming(), adminUid)
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time
+        && (
+          isAdmin() ||
+          (adminUid == request.auth.uid
+            && incoming().email == request.auth.token.email
+            && hasValidInviteForCaller())
+        );
+      allow update: if isValidId(adminUid)
+        && isAdmin()
+        && isValidAdminUser(incoming(), adminUid)
+        && incoming().diff(existing()).affectedKeys().hasOnly(['email', 'updatedAt'])
+        && incoming().uid == existing().uid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time;
+      allow delete: if isValidId(adminUid) && isAdmin() && adminUid != request.auth.uid;
+    }
+
+    match /admin_invites/{inviteId} {
+      allow get: if isValidId(inviteId) && (
+        isAdmin() || (isVerifiedUser() && resource.data.email == request.auth.token.email)
+      );
+      allow list: if false;
+      allow create: if isValidId(inviteId)
+        && inviteId == 'primary_sarah'
+        && isAdmin()
+        && isValidAdminInvite(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(inviteId)
+        && inviteId == 'primary_sarah'
+        && isAdmin()
+        && isValidAdminInvite(incoming())
+        && incoming().diff(existing()).affectedKeys().hasOnly(['email', 'invitedByUid', 'updatedAt'])
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time;
+      allow delete: if isValidId(inviteId) && isAdmin();
+    }
+
+    match /wishlist_products/{productId} {
+      allow get, list: if true;
+      allow create: if isValidId(productId)
+        && isAdmin()
+        && isValidWishlistProduct(incoming(), productId)
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(productId) && isValidWishlistProduct(incoming(), productId) && (
+        // Tier 1: Sarah admin edits or manages lifecycle
+        (
+          isAdmin()
+          && incoming().diff(existing()).affectedKeys().hasOnly([
+            'name', 'brand', 'category', 'store', 'url', 'image',
+            'descriptionIt', 'descriptionEn', 'descriptionRo',
+            'status', 'reservedUntil', 'received', 'sortOrder', 'updatedAt'
+          ])
+          && incoming().id == existing().id
+          && incoming().createdAt == existing().createdAt
+          && incoming().updatedAt == request.time
+        )
+        ||
+        // Tier 2a: Visitor atomically reserves an available or expired item for 24 hours
+        (
+          incoming().diff(existing()).affectedKeys().hasOnly(['status', 'reservedUntil', 'updatedAt'])
+          && (
+            existing().status == 'available' ||
+            (existing().status == 'reserved' && existing().reservedUntil is timestamp && existing().reservedUntil <= request.time)
+          )
+          && incoming().status == 'reserved'
+          && isWindow24Hours(incoming().reservedUntil)
+          && incoming().updatedAt == request.time
+          && existsAfter(/databases/$(database)/documents/private_reservation_locks/$(productId))
+          && getAfter(/databases/$(database)/documents/private_reservation_locks/$(productId)).data.expiresAt == incoming().reservedUntil
+        )
+        ||
+        // Tier 2b: Visitor holding the secret code declares purchase or cancels own active reservation
+        (
+          incoming().diff(existing()).affectedKeys().hasOnly(['status', 'reservedUntil', 'updatedAt'])
+          && existing().status == 'reserved'
+          && existing().reservedUntil is timestamp
+          && existing().reservedUntil > request.time
+          && incoming().updatedAt == request.time
+          && exists(/databases/$(database)/documents/private_reservation_locks/$(productId))
+          && (
+            (
+              incoming().status == 'purchase_declared'
+              && incoming().reservedUntil == existing().reservedUntil
+              && getAfter(/databases/$(database)/documents/gift_reservations/$(get(/databases/$(database)/documents/private_reservation_locks/$(productId)).data.reservationDocId)).data.status == 'purchase_declared'
+            )
+            ||
+            (
+              incoming().status == 'available'
+              && incoming().reservedUntil == null
+              && getAfter(/databases/$(database)/documents/gift_reservations/$(get(/databases/$(database)/documents/private_reservation_locks/$(productId)).data.reservationDocId)).data.status == 'cancelled'
+            )
+          )
+        )
+      );
+      allow delete: if isValidId(productId) && isAdmin();
+    }
+
+    match /private_reservation_locks/{productId} {
+      allow get: if isValidId(productId) && isAdmin();
+      allow list: if false;
+      allow create: if isValidId(productId)
+        && isValidReservationLock(incoming(), productId)
+        && incoming().updatedAt == request.time
+        && (
+          isAdmin() ||
+          (
+            exists(/databases/$(database)/documents/wishlist_products/$(productId))
+            && get(/databases/$(database)/documents/wishlist_products/$(productId)).data.status == 'available'
+            && getAfter(/databases/$(database)/documents/wishlist_products/$(productId)).data.status == 'reserved'
+            && incoming().expiresAt == getAfter(/databases/$(database)/documents/wishlist_products/$(productId)).data.reservedUntil
+            && existsAfter(/databases/$(database)/documents/gift_reservations/$(incoming().reservationDocId))
+            && getAfter(/databases/$(database)/documents/gift_reservations/$(incoming().reservationDocId)).data.productId == productId
+          )
+        );
+      allow update: if isValidId(productId)
+        && isValidReservationLock(incoming(), productId)
+        && incoming().updatedAt == request.time
+        && (
+          isAdmin() ||
+          (
+            incoming().diff(existing()).affectedKeys().hasOnly(['reservationDocId', 'expiresAt', 'updatedAt'])
+            && exists(/databases/$(database)/documents/wishlist_products/$(productId))
+            && (
+              get(/databases/$(database)/documents/wishlist_products/$(productId)).data.status == 'available' ||
+              (
+                get(/databases/$(database)/documents/wishlist_products/$(productId)).data.status == 'reserved'
+                && get(/databases/$(database)/documents/wishlist_products/$(productId)).data.reservedUntil is timestamp
+                && get(/databases/$(database)/documents/wishlist_products/$(productId)).data.reservedUntil <= request.time
+              )
+            )
+            && getAfter(/databases/$(database)/documents/wishlist_products/$(productId)).data.status == 'reserved'
+            && incoming().expiresAt == getAfter(/databases/$(database)/documents/wishlist_products/$(productId)).data.reservedUntil
+            && existsAfter(/databases/$(database)/documents/gift_reservations/$(incoming().reservationDocId))
+            && getAfter(/databases/$(database)/documents/gift_reservations/$(incoming().reservationDocId)).data.productId == productId
+          )
+        );
+      allow delete: if isValidId(productId) && isAdmin();
+    }
+
+    match /gift_reservations/{reservationDocId} {
+      allow get: if isValidSha256Id(reservationDocId);
+      allow list: if false;
+      allow create: if isValidSha256Id(reservationDocId)
+        && isValidGiftReservation(incoming())
+        && incoming().status == 'reserved'
+        && incoming().reservedAt == request.time
+        && incoming().updatedAt == request.time
+        && incoming().declaredAt == null
+        && isWindow24Hours(incoming().expiresAt)
+        && existsAfter(/databases/$(database)/documents/private_reservation_locks/$(incoming().productId))
+        && getAfter(/databases/$(database)/documents/private_reservation_locks/$(incoming().productId)).data.reservationDocId == reservationDocId;
+      allow update: if isValidSha256Id(reservationDocId) && isValidGiftReservation(incoming()) && (
+        (
+          isAdmin()
+          && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+          && incoming().productId == existing().productId
+          && incoming().reservedAt == existing().reservedAt
+          && incoming().updatedAt == request.time
+        )
+        ||
+        (
+          existing().status == 'reserved'
+          && existing().expiresAt > request.time
+          && incoming().productId == existing().productId
+          && incoming().productName == existing().productName
+          && incoming().productStore == existing().productStore
+          && incoming().productUrl == existing().productUrl
+          && incoming().reservedAt == existing().reservedAt
+          && incoming().expiresAt == existing().expiresAt
+          && incoming().updatedAt == request.time
+          && (
+            (
+              incoming().status == 'purchase_declared'
+              && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'declaredAt', 'buyerNote', 'updatedAt'])
+              && incoming().declaredAt == request.time
+            )
+            ||
+            (
+              incoming().status == 'cancelled'
+              && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+              && incoming().declaredAt == existing().declaredAt
+            )
+          )
+        )
+      );
+      allow delete: if isValidSha256Id(reservationDocId) && isAdmin();
+    }
+
+    match /wishlist_settings/{settingId} {
+      allow get: if isValidId(settingId) && settingId == 'public';
+      allow list: if false;
+      allow create: if isValidId(settingId)
+        && settingId == 'public'
+        && isAdmin()
+        && isValidPublicSettings(incoming())
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(settingId)
+        && settingId == 'public'
+        && isAdmin()
+        && isValidPublicSettings(incoming())
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'amazonWishlistUrl', 'showAmazonWishlist',
+          'publicDeliveryNote', 'showPublicDeliveryNote',
+          'hideReceivedFromVisitors', 'updatedByUid', 'updatedAt'
+        ])
+        && incoming().updatedAt == request.time;
+      allow delete: if false;
+    }
+
+    match /private_delivery/{docId} {
+      allow get: if isValidId(docId) && docId == 'sarah_private' && isAdmin();
+      allow list: if false;
+      allow create: if isValidId(docId)
+        && docId == 'sarah_private'
+        && isAdmin()
+        && isValidPrivateDelivery(incoming())
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(docId)
+        && docId == 'sarah_private'
+        && isAdmin()
+        && isValidPrivateDelivery(incoming())
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'recipientName', 'streetAddress', 'cityAndPostal', 'country',
+          'amazonLockerName', 'amazonLockerAddress', 'privateInstructions',
+          'updatedByUid', 'updatedAt'
+        ])
+        && incoming().updatedAt == request.time;
+      allow delete: if isValidId(docId) && docId == 'sarah_private' && isAdmin();
+    }
+  }
+}

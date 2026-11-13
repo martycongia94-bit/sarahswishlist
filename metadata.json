@@ -1,0 +1,6 @@
+{
+  "name": "Sarah's Wishlist ♡",
+  "description": "Un piccolo mondo di desideri, tutto per Sarah ♡ — Wishlist curata di Funko Pop!, peluche anime, gaming, streaming e regali.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

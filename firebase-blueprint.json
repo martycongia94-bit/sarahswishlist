@@ -1,0 +1,371 @@
+{
+  "entities": {
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Authorized administrator identity stored on the server for Sarah's private area.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 160
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "email", "createdAt", "updatedAt"]
+    },
+    "AdminInvite": {
+      "title": "AdminInvite",
+      "description": "Server-side invite authorizing a specific verified email to claim admin access.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 160
+        },
+        "invitedByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["email", "invitedByUid", "createdAt", "updatedAt"]
+    },
+    "WishlistProduct": {
+      "title": "WishlistProduct",
+      "description": "Public wishlist item with shared availability status.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "brand": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "category": {
+          "type": "string",
+          "enum": ["funko", "plush", "gaming", "streaming", "accessories"]
+        },
+        "store": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "url": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "image": {
+          "type": "string",
+          "maxLength": 600
+        },
+        "descriptionIt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "descriptionEn": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "descriptionRo": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "status": {
+          "type": "string",
+          "enum": ["available", "reserved", "purchase_declared", "confirmed", "received"]
+        },
+        "reservedUntil": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "received": {
+          "type": "boolean"
+        },
+        "sortOrder": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "brand",
+        "category",
+        "store",
+        "url",
+        "image",
+        "descriptionIt",
+        "descriptionEn",
+        "descriptionRo",
+        "status",
+        "reservedUntil",
+        "received",
+        "sortOrder",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "GiftReservation": {
+      "title": "GiftReservation",
+      "description": "Private visitor gift reservation keyed by SHA-256 hash of the visitor's secret code.",
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "productName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "productStore": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "productUrl": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "status": {
+          "type": "string",
+          "enum": ["reserved", "purchase_declared", "confirmed", "received", "cancelled"]
+        },
+        "buyerNote": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "reservedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "declaredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "productId",
+        "productName",
+        "productStore",
+        "productUrl",
+        "status",
+        "buyerNote",
+        "reservedAt",
+        "expiresAt",
+        "declaredAt",
+        "updatedAt"
+      ]
+    },
+    "PrivateReservationLock": {
+      "title": "PrivateReservationLock",
+      "description": "Admin-only lock pointer binding a product to its active reservation document ID.",
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "reservationDocId": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["productId", "reservationDocId", "expiresAt", "updatedAt"]
+    },
+    "PublicWishlistSettings": {
+      "title": "PublicWishlistSettings",
+      "description": "Visitor-visible instructions and optional Amazon Wishlist link explicitly authorized by Sarah.",
+      "type": "object",
+      "properties": {
+        "amazonWishlistUrl": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "showAmazonWishlist": {
+          "type": "boolean"
+        },
+        "publicDeliveryNote": {
+          "type": "string",
+          "maxLength": 800
+        },
+        "showPublicDeliveryNote": {
+          "type": "boolean"
+        },
+        "hideReceivedFromVisitors": {
+          "type": "boolean"
+        },
+        "updatedByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "amazonWishlistUrl",
+        "showAmazonWishlist",
+        "publicDeliveryNote",
+        "showPublicDeliveryNote",
+        "hideReceivedFromVisitors",
+        "updatedByUid",
+        "updatedAt"
+      ]
+    },
+    "PrivateDeliveryInfo": {
+      "title": "PrivateDeliveryInfo",
+      "description": "Strictly private delivery addresses, Amazon Locker details, and gift reception notes accessible only to Sarah.",
+      "type": "object",
+      "properties": {
+        "recipientName": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "streetAddress": {
+          "type": "string",
+          "maxLength": 250
+        },
+        "cityAndPostal": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "country": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "amazonLockerName": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "amazonLockerAddress": {
+          "type": "string",
+          "maxLength": 250
+        },
+        "privateInstructions": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "updatedByUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "recipientName",
+        "streetAddress",
+        "cityAndPostal",
+        "country",
+        "amazonLockerName",
+        "amazonLockerAddress",
+        "privateInstructions",
+        "updatedByUid",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/admins/{adminUid}": {
+      "schema": { "$ref": "#/entities/AdminUser" },
+      "description": "Authorized admin accounts for Sarah's Wishlist private area."
+    },
+    "/admin_invites/{inviteId}": {
+      "schema": { "$ref": "#/entities/AdminInvite" },
+      "description": "Authorized email invite for Sarah to claim admin access independently."
+    },
+    "/wishlist_products/{productId}": {
+      "schema": { "$ref": "#/entities/WishlistProduct" },
+      "description": "Public wishlist catalog items with atomic reservation status."
+    },
+    "/gift_reservations/{reservationDocId}": {
+      "schema": { "$ref": "#/entities/GiftReservation" },
+      "description": "Private visitor reservations keyed by SHA-256 of the visitor's secret code."
+    },
+    "/private_reservation_locks/{productId}": {
+      "schema": { "$ref": "#/entities/PrivateReservationLock" },
+      "description": "Admin-only lock records linking products to active reservation documents."
+    },
+    "/wishlist_settings/{settingId}": {
+      "schema": { "$ref": "#/entities/PublicWishlistSettings" },
+      "description": "Publicly authorized gift guidance and Amazon Wishlist link."
+    },
+    "/private_delivery/{docId}": {
+      "schema": { "$ref": "#/entities/PrivateDeliveryInfo" },
+      "description": "Strictly private delivery addresses and Amazon Locker info, readable and writable only by Sarah."
+    }
+  }
+}
