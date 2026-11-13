@@ -32,8 +32,9 @@ service cloud.firestore {
     }
 
     function isBootstrappedOwner() {
-      return isVerifiedUser() && request.auth.token.email == 'martycongia94@gmail.com';
-    }
+  return isVerifiedUser()
+    && request.auth.uid == 'z1hYOkTJt9YETaaeDn3QsV6t86o1';
+}
 
     function isAdmin() {
       return isVerifiedUser() && (
