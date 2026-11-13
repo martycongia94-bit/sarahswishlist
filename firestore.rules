@@ -454,25 +454,32 @@ function isAdmin() {
       allow delete: if false;
     }
 
-    match /private_delivery/{docId} {
-      allow get: if isValidId(docId) && docId == 'sarah_private' && isAdmin();
-      allow list: if false;
-      allow create: if isValidId(docId)
-        && docId == 'sarah_private'
-        && isAdmin()
-        && isValidPrivateDelivery(incoming())
-        && incoming().updatedAt == request.time;
-      allow update: if isValidId(docId)
-        && docId == 'sarah_private'
-        && isAdmin()
-        && isValidPrivateDelivery(incoming())
-        && incoming().diff(existing()).affectedKeys().hasOnly([
-          'recipientName', 'streetAddress', 'cityAndPostal', 'country',
-          'amazonLockerName', 'amazonLockerAddress', 'privateInstructions',
-          'updatedByUid', 'updatedAt'
-        ])
-        && incoming().updatedAt == request.time;
-      allow delete: if isValidId(docId) && docId == 'sarah_private' && isAdmin();
-    }
-  }
+    
+match /private_delivery/{docId} {
+  allow get: if isValidId(docId)
+    && docId == 'sarah_private'
+    && isOwner();
+
+  allow list: if false;
+
+  allow create: if isValidId(docId)
+    && docId == 'sarah_private'
+    && isOwner()
+    && isValidPrivateDelivery(incoming())
+    && incoming().updatedAt == request.time;
+
+  allow update: if isValidId(docId)
+    && docId == 'sarah_private'
+    && isOwner()
+    && isValidPrivateDelivery(incoming())
+    && incoming().diff(existing()).affectedKeys().hasOnly([
+      'recipientName', 'streetAddress', 'cityAndPostal', 'country',
+      'amazonLockerName', 'amazonLockerAddress', 'privateInstructions',
+      'updatedByUid', 'updatedAt'
+    ])
+    && incoming().updatedAt == request.time;
+
+  allow delete: if isValidId(docId)
+    && docId == 'sarah_private'
+    && isOwner();
 }
