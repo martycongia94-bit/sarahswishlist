@@ -234,30 +234,35 @@ function isAdmin() {
         && ts <= request.time + duration.value(24, 'h') + duration.value(5, 'm');
     }
 
-    match /admins/{adminUid} {
-      allow get: if isValidId(adminUid) && (
-        isAdmin() || (isVerifiedUser() && request.auth.uid == adminUid)
-      );
-      allow list: if false;
-      allow create: if isValidId(adminUid)
-        && isVerifiedUser()
-        && isValidAdminUser(incoming(), adminUid)
-        && incoming().createdAt == request.time
-        && incoming().updatedAt == request.time
-        && (
-          isAdmin() ||
-          (adminUid == request.auth.uid
-            && incoming().email == request.auth.token.email
-            && hasValidInviteForCaller())
-        );
-      allow update: if isValidId(adminUid)
-        && isAdmin()
-        && isValidAdminUser(incoming(), adminUid)
-        && incoming().diff(existing()).affectedKeys().hasOnly(['email', 'updatedAt'])
-        && incoming().uid == existing().uid
-        && incoming().createdAt == existing().createdAt
-        && incoming().updatedAt == request.time;
-      allow delete: if isValidId(adminUid) && isAdmin() && adminUid != request.auth.uid;
+    
+match /admins/{adminUid} {
+  allow get: if isValidId(adminUid) && (
+    isOwner() ||
+    (isVerifiedUser() && request.auth.uid == adminUid)
+  );
+
+  allow list: if false;
+
+  allow create: if isValidId(adminUid)
+    && isVerifiedUser()
+    && isValidAdminUser(incoming(), adminUid)
+    && incoming().createdAt == request.time
+    && incoming().updatedAt == request.time
+    && isOwner();
+
+  allow update: if isValidId(adminUid)
+    && isOwner()
+    && isValidAdminUser(incoming(), adminUid)
+    && incoming().diff(existing()).affectedKeys().hasOnly(['email', 'updatedAt'])
+    && incoming().uid == existing().uid
+    && incoming().createdAt == existing().createdAt
+    && incoming().updatedAt == request.time;
+
+  allow delete: if isValidId(adminUid)
+    && isOwner()
+    && adminUid != request.auth.uid;
+}
+
     }
 
     match /admin_invites/{inviteId} {
