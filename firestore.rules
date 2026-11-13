@@ -267,7 +267,7 @@ match /admins/{adminUid} {
 
     match /admin_invites/{inviteId} {
       allow get: if isValidId(inviteId) && (
-        isAdmin() || (isVerifiedUser() && resource.data.email == request.auth.token.email)
+       isOwner() || (isVerifiedUser() && resource.data.email == request.auth.token.email)
       );
       allow list: if false;
       allow create: if isValidId(inviteId)
