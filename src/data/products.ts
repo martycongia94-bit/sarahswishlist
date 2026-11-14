@@ -562,7 +562,7 @@ export const PRODUCTS: Product[] = [
   category: 'accessories',
   store: 'air up ufficiale',
   url: 'https://shop.air-up.com/it/it/bottles/pro-3/bottle-pro3-steel-710ml-desert-sand',
-  image: null,
+  image: '/products/IMG_2095.jpeg',
   description: {
     it: 'Borraccia air up PRO 3 Steel, colore Desert Sand, capacità 710 ml.',
     en: 'air up PRO 3 Steel bottle, Desert Sand colour, 710 ml capacity.',
