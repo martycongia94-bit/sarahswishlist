@@ -566,7 +566,9 @@ export const PRODUCTS: Product[] = [
   description: {
     it: 'Borraccia air up PRO 3 Steel, colore Desert Sand, capacità 710 ml.',
     en: 'air up PRO 3 Steel bottle, Desert Sand colour, 710 ml capacity.',
-    ro: 'Sticlă air up PRO 3 Steel, culoarea Desert Sand, capacitate   
+    
+    ro: 'Sticla air up PRO 3 Steel, culoarea Desert Sand, capacitate 710 ml.',
+
 },
 },
 ];
