@@ -555,4 +555,18 @@ export const PRODUCTS: Product[] = [
       ro: 'Cană adorabilă din porțelan mov de 450 ml cu capac în formă de pisică și linguriță asortată.',
     },
   },
+{
+  id: 'airup_white_1l',
+  name: 'Borraccia air up PRO 3 Steel – Desert Sand 710 ml',
+  brand: 'air up',
+  category: 'accessories',
+  store: 'air up ufficiale',
+  url: 'https://shop.air-up.com/it/it/bottles/pro-3/bottle-pro3-steel-710ml-desert-sand',
+  image: null,
+  description: {
+    it: 'Borraccia air up PRO 3 Steel, colore Desert Sand, capacità 710 ml.',
+    en: 'air up PRO 3 Steel bottle, Desert Sand colour, 710 ml capacity.',
+    ro: 'Sticlă air up PRO 3 Steel, culoarea Desert Sand, capacitate   
+},
+},
 ];
