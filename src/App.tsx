@@ -347,9 +347,13 @@ export default function App() {
         setActiveCode('');
         setReservationError(mapped);
         setReservationModalOpen(true);
-      } else {
-        setCatalogActionError(mapped);
-      }
+} else {
+  setCatalogActionError(mapped);
+  setActiveReservation(null);
+  setActiveCode('');
+  setReservationError(mapped);
+  setReservationModalOpen(true);
+}
     } finally {
       setReservingProductId(null);
     }
