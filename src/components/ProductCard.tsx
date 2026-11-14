@@ -93,7 +93,7 @@ export function ProductCard({
               aria-label={`${t.card.buyAriaPrefix} ${product.name}`}
               className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl bg-[#FDF2F6] text-[#2D1B24] border border-rose-200 hover:border-[#C92A6D]/50 hover:text-[#C92A6D] transition-colors duration-150 whitespace-nowrap min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C92A6D] focus-visible:ring-offset-2"
             >
-              <span>{t.card.buyButton}</span>
+<span>Continua al pagamento sul negozio ↗</span>
               <ArrowUpRight className="w-4 h-4 shrink-0" aria-hidden="true" />
             </a>
           ) : (
