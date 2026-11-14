@@ -99,7 +99,17 @@ export function ReservationModal({
                   ? t.reservation.declaredSuccessTitle
                   : t.reservation.modalTitle
                 : t.reservation.lookupHeading}
-            </h2>
+            </h2> 
+<div className="mt-2 rounded-xl border border-rose-200 bg-white/80 px-4 py-3">
+  <p className="text-sm font-semibold text-rose-700">
+    🔒 Destinazione: Indirizzo di casa
+  </p>
+  <p className="mt-1 text-xs text-gray-600">
+    Regalo destinato a Sarah ♡
+    L'indirizzo privato non viene mostrato sul sito.
+  </p>
+</div>
+
           </div>
 
           <button
