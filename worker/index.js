@@ -14,8 +14,10 @@ export default {async fetch(req,env){
  if(u.pathname==='/api/test/status'&&req.method==='GET')return env.ORDERS.get(env.ORDERS.idFromName('sandbox')).fetch('https://internal/status');
  if(u.pathname==='/api/test/checkout'&&req.method==='POST'){
  if(req.headers.get('Origin')!==u.origin)return json({error:'Origin'},403);
- if(!env.STRIPE_SECRET_KEY?.startsWith('sk_test_')||!env.STRIPE_WEBHOOK_SECRET)return json({error:'Sandbox not configured'},503);
- const {productId}=await req.json(); if(typeof productId!=='string'||!Object.hasOwn(catalog,productId))return json({error:'Unknown product'},400);
+if(!env.STRIPE_SECRET_KEY)return json({error:'Stripe API key missing'},503);
+if(!env.STRIPE_SECRET_KEY.startsWith('sk_test_'))return json({error:'Invalid Stripe test key format'},503);
+if(!env.STRIPE_WEBHOOK_SECRET)return json({error:'Webhook secret missing'},503);
+if(!env.STRIPE_WEBHOOK_SECRET.startsWith('whsec_'))return json({error:'Invalid webhook secret format'},503); const {productId}=await req.json(); if(typeof productId!=='string'||!Object.hasOwn(catalog,productId))return json({error:'Unknown product'},400);
  return env.ORDERS.get(env.ORDERS.idFromName('sandbox')).fetch('https://internal/create',{method:'POST',body:JSON.stringify({productId,origin:u.origin})});
  }
  if(u.pathname==='/api/stripe/webhook'&&req.method==='POST'){
