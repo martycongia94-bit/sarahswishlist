@@ -22,5 +22,14 @@
       "new_sqlite_classes": ["TestOrders"]
     }
   ],
-  "previews": {}
+  "previews": {
+    "durable_objects": {
+      "bindings": [
+        {
+          "name": "ORDERS",
+          "class_name": "TestOrders"
+        }
+      ]
+    }
+  }
 }
