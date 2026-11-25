@@ -189,6 +189,29 @@ async function verifyAdmin(req, env) {
   }
 }
 
+async function checkFirebaseAvailability(ids, env) {
+  const project = env.FIREBASE_PROJECT_ID;
+  const database = env.FIREBASE_DATABASE_ID;
+  if (!project || !database) throw new Error('Firebase not configured');
+
+  const results = await Promise.all(ids.map(async id => {
+    const url = `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(project)}/databases/${encodeURIComponent(database)}/documents/wishlist_products/${encodeURIComponent(id)}`;
+    const response = await fetch(url);
+    if (response.status === 404) return false;
+    if (!response.ok) throw new Error('Firebase unavailable');
+    const { fields = {} } = await response.json();
+    if (fields.id?.stringValue !== id || fields.received?.booleanValue !== false) return false;
+    const status = fields.status?.stringValue;
+    if (status === 'available') return true;
+    if (status === 'reserved') {
+      const expiry = Date.parse(fields.reservedUntil?.timestampValue || '');
+      return Number.isFinite(expiry) && expiry <= Date.now();
+    }
+    return false;
+  }));
+  return results.every(Boolean);
+}
+
 // MAIN WORKER
 
 export default {
@@ -504,6 +527,14 @@ export class TestOrders {
           { error: 'Unknown product' },
           400
         );
+      }
+
+      try {
+        if (!await checkFirebaseAvailability(productIds, this.env)) {
+          return json({ error: 'Product unavailable in Firebase' }, 409);
+        }
+      } catch {
+        return json({ error: 'Unable to verify product availability' }, 503);
       }
 
       const attempt = crypto.randomUUID();
