@@ -67,6 +67,27 @@ export function StripeOrders() {
   const [migrationResult, setMigrationResult] = useState('');
   const [checkingMigration, setCheckingMigration] = useState(false);
 
+  async function checkPreflight() {
+    setCheckingMigration(true);
+    setMigrationResult('');
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error('Accesso richiesto');
+      const token = await user.getIdToken();
+      const response = await fetch('/api/admin/migration-preflight', {
+        headers: { Authorization: `Bearer ${token}` }, cache: 'no-store'
+      });
+      const result = await response.json();
+      if (!response.ok || !Array.isArray(result.products)) throw new Error('Verifica fallita');
+      setMigrationResult((result.ready ? 'Migrazione compatibile' : 'Conflitti rilevati') +
+        ' · ' + result.products.map((p: {id: string; available: boolean}) => p.id + ': ' + (p.available ? 'OK' : 'NON DISPONIBILE')).join(' · '));
+    } catch {
+      setMigrationResult('Impossibile verificare la compatibilità.');
+    } finally {
+      setCheckingMigration(false);
+    }
+  }
+
   async function checkMigration() {
     setCheckingMigration(true);
     setMigrationResult('');
@@ -225,6 +246,10 @@ export function StripeOrders() {
         <button type="button" disabled={checkingMigration} onClick={() => void checkMigration()}
           className="ml-2 rounded-xl border border-rose-200 px-4 py-2.5 text-sm font-semibold text-[#C92A6D] disabled:opacity-50">
           {checkingMigration ? 'Verifica in corso...' : 'Verifica manutenzione'}
+        </button>
+        <button type="button" disabled={checkingMigration} onClick={() => void checkPreflight()}
+          className="ml-2 rounded-xl border border-rose-200 px-4 py-2.5 text-sm font-semibold text-[#C92A6D] disabled:opacity-50">
+          Verifica compatibilità migrazione
         </button>
         {migrationResult && <p role="status" className="mt-3 text-sm text-[#6B4E5C]">{migrationResult}</p>}
         {firebaseResult && <p role="status" className="mt-3 text-sm text-[#6B4E5C]">{firebaseResult}</p>}
