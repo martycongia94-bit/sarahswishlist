@@ -64,6 +64,34 @@ export function StripeOrders() {
   const [checkingFirebase, setCheckingFirebase] = useState(false);
   const [firebaseResult, setFirebaseResult] = useState('');
 
+  const [migrationResult, setMigrationResult] = useState('');
+  const [checkingMigration, setCheckingMigration] = useState(false);
+
+  async function checkMigration() {
+    setCheckingMigration(true);
+    setMigrationResult('');
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error('Accesso richiesto');
+      const token = await user.getIdToken();
+      const response = await fetch('/api/admin/migration-readiness', {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: 'no-store',
+      });
+      const result = await response.json();
+      if (!response.ok || typeof result.paused !== 'boolean' ||
+          !Number.isInteger(result.paid) || !Number.isInteger(result.pending)) {
+        throw new Error('Verifica fallita');
+      }
+      setMigrationResult('Manutenzione: ' + (result.paused ? 'attiva' : 'disattivata') +
+        ' · Regali pagati: ' + result.paid + ' · Pendenti: ' + result.pending);
+    } catch {
+      setMigrationResult('Impossibile verificare la manutenzione.');
+    } finally {
+      setCheckingMigration(false);
+    }
+  }
+
   async function checkFirebase() {
     setCheckingFirebase(true);
     setFirebaseResult('');
@@ -194,6 +222,11 @@ export function StripeOrders() {
           className="rounded-xl bg-[#C92A6D] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
           {checkingFirebase ? 'Verifica in corso...' : 'Verifica collegamento Firebase'}
         </button>
+        <button type="button" disabled={checkingMigration} onClick={() => void checkMigration()}
+          className="ml-2 rounded-xl border border-rose-200 px-4 py-2.5 text-sm font-semibold text-[#C92A6D] disabled:opacity-50">
+          {checkingMigration ? 'Verifica in corso...' : 'Verifica manutenzione'}
+        </button>
+        {migrationResult && <p role="status" className="mt-3 text-sm text-[#6B4E5C]">{migrationResult}</p>}
         {firebaseResult && <p role="status" className="mt-3 text-sm text-[#6B4E5C]">{firebaseResult}</p>}
       </div>
 
