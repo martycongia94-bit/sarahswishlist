@@ -599,6 +599,11 @@ export class TestOrders {
         return json({ error: 'Unable to verify product availability' }, 503);
       }
 
+      // Migration gate: stop new sessions while existing orders are synchronized.
+      if (this.env.FIREBASE_CHECKOUT_MODE === 'migration') {
+        return json({ error: 'Sandbox checkout temporarily paused for migration' }, 503);
+      }
+
       const attempt = crypto.randomUUID();
 
       const keys = productIds.map(
