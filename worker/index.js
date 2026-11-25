@@ -1,5 +1,6 @@
 
 import catalog from './catalog.json';
+import firebaseConfig from '../firebase-applet-config.json';
 
 const json = (data, status = 200) =>
   Response.json(data, {
@@ -212,6 +213,29 @@ async function checkFirebaseAvailability(ids, env) {
   return results.every(Boolean);
 }
 
+// Dedicated Firebase identity: no admin privileges.
+async function authenticateFirebaseWorker(env) {
+  const email = cleanSecret(env.FIREBASE_WORKER_EMAIL);
+  const password = env.FIREBASE_WORKER_PASSWORD;
+  const uid = cleanSecret(env.FIREBASE_WORKER_UID);
+  if (!email || !password || !uid || !env.FIREBASE_PROJECT_ID ||
+      firebaseConfig.projectId !== env.FIREBASE_PROJECT_ID) {
+    throw new Error('Firebase worker configuration missing');
+  }
+  const response = await fetch(
+    'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' +
+      encodeURIComponent(firebaseConfig.apiKey),
+    { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, returnSecureToken: true }) }
+  );
+  if (!response.ok) throw new Error('Firebase worker authentication failed');
+  const data = await response.json();
+  if (data.localId !== uid || typeof data.idToken !== 'string') {
+    throw new Error('Unexpected Firebase worker identity');
+  }
+  return data.idToken;
+}
+
 // MAIN WORKER
 
 export default {
@@ -229,6 +253,17 @@ export default {
 
       const stripeKey = cleanSecret(env.STRIPE_SECRET_KEY);
       const secret = cleanSecret(env.STRIPE_WEBHOOK_SECRET);
+
+      // Admin-only, read-only identity diagnostic. Never returns credentials.
+      if (u.pathname === '/api/admin/firebase-worker-check' && req.method === 'GET') {
+        if (!await verifyAdmin(req, env)) return json({ error: 'Unauthorized' }, 403);
+        try {
+          await authenticateFirebaseWorker(env);
+          return json({ test: true, authenticated: true });
+        } catch {
+          return json({ test: true, authenticated: false }, 503);
+        }
+      }
 
       // PROTECTED ADMIN ORDERS
 
