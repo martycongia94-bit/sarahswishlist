@@ -232,7 +232,7 @@ export class TestOrders {
           mode: 'payment',
           success_url: origin + '/?stripe_test=success',
           cancel_url: origin + '/?stripe_test=cancel',
-          'payment_method_types[0]': 'card',
+          'allowed_payment_method_types[0]': 'card',
           'line_items[0][price_data][currency]': 'eur',
           'line_items[0][price_data][unit_amount]': '100',
           'line_items[0][price_data][product_data][name]':
