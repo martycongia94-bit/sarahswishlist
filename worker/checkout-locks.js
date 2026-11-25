@@ -13,6 +13,14 @@ export async function commitCheckoutLocks(env, token, ids, attempt, operation) {
   const writes = await Promise.all(ids.map(async id => {
     const name = database + '/documents/checkout_locks/' + id;
     if (operation === 'acquire') {
+      const existing = await fetch(base + '/checkout_locks/' + id, { headers });
+      if (existing.ok) {
+        const lock = await existing.json();
+        if (lock.fields?.attempt?.stringValue === attempt &&
+            ['pending', 'paid'].includes(lock.fields?.status?.stringValue)) return null;
+        throw new Error('Existing lock belongs to another attempt');
+      }
+      if (existing.status !== 404) throw new Error('Lock read failed');
       return {
         update: { name, fields: { attempt: { stringValue: attempt }, status: { stringValue: 'pending' } } },
         currentDocument: { exists: false },
