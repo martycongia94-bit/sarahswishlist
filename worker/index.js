@@ -277,6 +277,11 @@ export default {
         return orders.fetch('https://internal/admin/migration-readiness');
       }
 
+      if (u.pathname === '/api/admin/migration-preflight' && req.method === 'GET') {
+        if (!await verifyAdmin(req, env)) return json({error:'Unauthorized'},403);
+        return orders.fetch('https://internal/admin/migration-preflight');
+      }
+
       // PROTECTED ADMIN ORDERS
 
       if (
@@ -547,6 +552,22 @@ export class TestOrders {
           )
         }
       });
+    }
+
+    // Read-only preflight: validate historical paid products before migration.
+    if (path === '/admin/migration-preflight') {
+      if (this.env.FIREBASE_CHECKOUT_MODE !== 'migration') return json({error:'Maintenance required'},409);
+      const rows = [...(await storage.list({prefix:'order:'})).values()];
+      if (rows.some(x => x.status === 'pending')) return json({error:'Pending orders exist'},409);
+      const paid = rows.filter(x => x.status === 'paid');
+      const results = [];
+      for (const row of paid) {
+        const available = validIds([row.productId]) && typeof row.attempt === 'string' &&
+          /^[a-zA-Z0-9_-]{1,128}$/.test(row.attempt) &&
+          await checkFirebaseAvailability([row.productId], this.env);
+        results.push({id:row.productId, available});
+      }
+      return json({test:true, ready:results.every(x=>x.available), products:results});
     }
 
     // Read-only migration readiness diagnostic.
