@@ -669,10 +669,11 @@ export class TestOrders {
       }
 
       // Migration gate: stop new sessions while existing orders are synchronized.
-      if (this.env.FIREBASE_CHECKOUT_MODE === 'migration') {
+      if (this.env.FIREBASE_CHECKOUT_MODE !== 'active') {
         return json({ error: 'Sandbox checkout temporarily paused for migration' }, 503);
       }
 
+      if (productIds.length > 10) return json({error:'Maximum 10 products per checkout'},400);
       const attempt = crypto.randomUUID();
 
       const keys = productIds.map(
@@ -715,6 +716,13 @@ export class TestOrders {
           { error: 'Unavailable in test' },
           409
         );
+      }
+
+      try {
+        await sharedCheckoutLock(this.env, productIds, attempt, 'acquire');
+      } catch {
+        // Fail closed: a remote commit may have succeeded despite a network error.
+        return json({error:'Checkout lock uncertain; administrator review required'},503);
       }
 
       const form = new URLSearchParams({
@@ -798,6 +806,11 @@ export class TestOrders {
         if (
           [400, 401, 403, 404, 422].includes(r.status)
         ) {
+          try {
+            await sharedCheckoutLock(this.env, productIds, attempt, 'release');
+          } catch {
+            return json({error:'Lock release uncertain; administrator review required'},503);
+          }
           await storage.transaction(async tx => {
             const rows = await tx.get(keys);
 
@@ -901,6 +914,25 @@ export class TestOrders {
 
       if (!paid && !released) {
         return json({ received: true });
+      }
+
+      const eventKeys = ids.map(id => 'order:' + id);
+      const eventRows = await storage.get(eventKeys);
+      if (eventKeys.some(k => {
+        const v = eventRows.get(k);
+        return !v || v.attempt !== s.metadata.attempt ||
+          (v.sessionId && v.sessionId !== s.id);
+      })) return json({received:true});
+      if (eventKeys.every(k => eventRows.get(k).status === (paid ? 'paid' : 'released'))) {
+        return json({received:true});
+      }
+      if (eventKeys.some(k => eventRows.get(k).status !== 'pending')) {
+        return json({error:'Conflicting order state; review required'},503);
+      }
+      try {
+        await sharedCheckoutLock(this.env, ids, s.metadata.attempt, paid ? 'paid' : 'release');
+      } catch {
+        return json({error:'Firebase finalization failed; retry required'},503);
       }
 
       await storage.transaction(async tx => {
