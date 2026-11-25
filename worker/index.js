@@ -254,6 +254,26 @@ export default {
         return orders.fetch('https://internal/status');
       }
 
+      // Read-only sandbox availability diagnostic (never creates a checkout).
+      if (u.pathname === '/api/test/availability' && req.method === 'GET') {
+        const productIds = u.searchParams.getAll('id');
+        if (!validIds(productIds)) return json({ error: 'Unknown product' }, 400);
+        try {
+          if (!await checkFirebaseAvailability(productIds, env)) {
+            return json({ test: true, available: false, error: 'Product unavailable in Firebase' }, 409);
+          }
+          const statusResponse = await orders.fetch('https://internal/status');
+          if (!statusResponse.ok) throw new Error('Status unavailable');
+          const status = await statusResponse.json();
+          if (productIds.some(id => status.paid.includes(id) || status.pending.includes(id))) {
+            return json({ test: true, available: false, error: 'Unavailable in test' }, 409);
+          }
+          return json({ test: true, available: true });
+        } catch {
+          return json({ test: true, error: 'Unable to verify product availability' }, 503);
+        }
+      }
+
       // STRIPE CHECKOUT
 
       if (
