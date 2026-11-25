@@ -272,6 +272,11 @@ export default {
         }
       }
 
+      if (u.pathname === '/api/admin/migration-readiness' && req.method === 'GET') {
+        if (!await verifyAdmin(req, env)) return json({ error: 'Unauthorized' }, 403);
+        return orders.fetch('https://internal/admin/migration-readiness');
+      }
+
       // PROTECTED ADMIN ORDERS
 
       if (
@@ -541,6 +546,17 @@ export class TestOrders {
             0
           )
         }
+      });
+    }
+
+    // Read-only migration readiness diagnostic.
+    if (path === '/admin/migration-readiness') {
+      const rows = [...(await storage.list({ prefix: 'order:' })).values()];
+      return json({
+        test: true,
+        paused: this.env.FIREBASE_CHECKOUT_MODE === 'migration',
+        paid: rows.filter(x => x.status === 'paid').length,
+        pending: rows.filter(x => x.status === 'pending').length
       });
     }
 
