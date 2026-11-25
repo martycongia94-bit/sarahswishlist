@@ -7,13 +7,16 @@ const json = (data, status = 200) =>
     headers: { 'Cache-Control': 'no-store' }
   });
 
+const cleanSecret = value =>
+  typeof value === 'string' ? value.trim() : '';
+
+const isTestKey = key =>
+  /^(sk|rk)_test_[A-Za-z0-9]+$/.test(key);
+
 const hex = b =>
   Array.from(new Uint8Array(b), x =>
     x.toString(16).padStart(2, '0')
   ).join('');
-
-const cleanSecret = value =>
-  typeof value === 'string' ? value.trim() : '';
 
 async function verify(raw, header, secret) {
   const parts = (header || '').split(',');
@@ -89,17 +92,21 @@ export default {
         }
 
         if (!stripeKey) {
-          return json({ error: 'Stripe API key missing' }, 503);
+          return json({
+            error: 'Stripe API key missing'
+          }, 503);
         }
 
-        if (!stripeKey.startsWith('sk_test_')) {
+        if (!isTestKey(stripeKey)) {
           return json({
             error: 'Invalid Stripe test key format'
           }, 503);
         }
 
         if (!webhookSecret) {
-          return json({ error: 'Webhook secret missing' }, 503);
+          return json({
+            error: 'Webhook secret missing'
+          }, 503);
         }
 
         if (!webhookSecret.startsWith('whsec_')) {
@@ -114,7 +121,9 @@ export default {
           typeof productId !== 'string' ||
           !Object.hasOwn(catalog, productId)
         ) {
-          return json({ error: 'Unknown product' }, 400);
+          return json({
+            error: 'Unknown product'
+          }, 400);
         }
 
         return env.ORDERS
@@ -197,13 +206,14 @@ export class TestOrders {
           this.env.STRIPE_SECRET_KEY
         );
 
-        if (!stripeKey.startsWith('sk_test_')) {
+        if (!isTestKey(stripeKey)) {
           return json({
             error: 'Invalid Stripe test key format'
           }, 503);
         }
 
         const { productId, origin } = await req.json();
+
         const key = 'order:' + productId;
         const old = await this.ctx.storage.get(key);
 
@@ -269,7 +279,8 @@ export class TestOrders {
           }
 
           return json({
-            error: 'Stripe rejected checkout'
+            error: 'Stripe rejected checkout',
+            stripeStatus: r.status
           }, 502);
         }
 
