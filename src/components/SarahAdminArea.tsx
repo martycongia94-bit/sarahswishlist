@@ -216,6 +216,37 @@ export function SarahAdminArea({
     return () => unsub();
   }, []);
 
+  const [stripeStatus, setStripeStatus] = useState<{ paid: string[]; pending: string[] } | null>(null);
+  const [stripeStatusError, setStripeStatusError] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen || !isAdmin || !user) return;
+    let active = true;
+    let busy = false;
+    const controller = new AbortController();
+    setStripeStatus(null);
+    setStripeStatusError(false);
+    async function refreshStatus() {
+      if (busy || !active) return;
+      busy = true;
+      try {
+        const response = await fetch('/api/test/status', { cache: 'no-store', signal: controller.signal });
+        if (!response.ok) throw new Error('Status unavailable');
+        const data = await response.json();
+        if (!Array.isArray(data.paid) || !Array.isArray(data.pending) ||
+            !data.paid.every((id: unknown) => typeof id === 'string') ||
+            !data.pending.every((id: unknown) => typeof id === 'string')) throw new Error('Invalid status');
+        if (active) { setStripeStatus(data); setStripeStatusError(false); }
+      } catch {
+        if (active) { setStripeStatus(null); setStripeStatusError(true); }
+      } finally { busy = false; }
+    }
+    void refreshStatus();
+    const timer = window.setInterval(refreshStatus, 5000);
+    window.addEventListener('focus', refreshStatus);
+    return () => { active = false; controller.abort(); window.clearInterval(timer); window.removeEventListener('focus', refreshStatus); };
+  }, [isOpen, isAdmin, user]);
+
   if (!isOpen) return null;
 
   const formatAuthError = (err: unknown): string => {
@@ -1133,6 +1164,9 @@ export function SarahAdminArea({
                   </button>
                 </div>
 
+                <p className="text-xs text-[#6B4E5C]" role="status">
+                  {stripeStatusError ? 'Stati Stripe non disponibili: verifica nella scheda Ordini Stripe.' : !stripeStatus ? 'Caricamento stati Stripe...' : 'Stati Stripe di prova aggiornati automaticamente. Nessun pagamento reale.'}
+                </p>
                 {/* Product Management List */}
                 <div className="space-y-2.5">
                   {filteredAdminProducts.map((item) => (
@@ -1169,7 +1203,12 @@ export function SarahAdminArea({
                                   : ''
                               }
                             >
-                              {t.statuses[getEffectiveProductStatus(item)]}
+                              {stripeStatus?.paid.includes(String(item.id)) || stripeStatus?.pending.includes(String(item.id)) ? `Firebase: ${t.statuses[getEffectiveProductStatus(item)]}` : t.statuses[getEffectiveProductStatus(item)]}
+                              {stripeStatus?.paid.includes(String(item.id)) ? (
+                                <span className="ml-2 font-semibold text-green-700">· Pagato (test)</span>
+                              ) : stripeStatus?.pending.includes(String(item.id)) ? (
+                                <span className="ml-2 font-semibold text-amber-700">· Pagamento in attesa (test)</span>
+                              ) : null}
                             </span>
                           </p>
                         </div>
