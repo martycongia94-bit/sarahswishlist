@@ -97,6 +97,42 @@ export default function App() {
     DEFAULT_PUBLIC_SETTINGS
   );
   const [adminOpen, setAdminOpen] = useState(false);
+  const [paidIds, setPaidIds] = useState<string[]>([]);
+  const [stripeReturn] = useState(() => new URLSearchParams(window.location.search).get('stripe_test'));
+  const [showStripeNotice, setShowStripeNotice] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    let busy = false;
+    const refresh = async () => {
+      if (busy) return;
+      busy = true;
+      try {
+        const response = await fetch('/api/test/status', { cache: 'no-store' });
+        if (!response.ok) return;
+        const data = await response.json();
+        if (active && Array.isArray(data.paid)) {
+          setPaidIds(data.paid.map(String));
+        }
+      } catch {
+        // Keep the last known paid status on transient failures.
+      } finally { busy = false; }
+    };
+    void refresh();
+    const timer = window.setInterval(refresh, 5000);
+    window.addEventListener('focus', refresh);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+      window.removeEventListener('focus', refresh);
+    };
+  }, []);
+
+  const stripeNotice = {
+    it: 'Grazie! Sei tornato dal pagamento di prova. La conferma viene verificata dal sistema. Nessuna spedizione reale.',
+    en: 'Thank you! You returned from test checkout. The system is verifying confirmation. No real shipment.',
+    ro: 'Mulțumim! Ai revenit de la plata de test. Sistemul verifică confirmarea. Nu există o livrare reală.'
+  }[language];
 
   // Gift reservation modal & workflow state
   const [reservingProductId, setReservingProductId] = useState<string | null>(null);
@@ -179,9 +215,9 @@ export default function App() {
 
   const visibleCatalog = useMemo(() => {
     return catalogProducts.filter((item) =>
-      isProductAvailableToVisitors(item, nowMs)
+      isProductAvailableToVisitors(item, nowMs) && !paidIds.includes(String(item.id))
     );
-  }, [catalogProducts, nowMs]);
+  }, [catalogProducts, nowMs, paidIds]);
 
   const favoriteSet = useMemo(() => new Set(favorites), [favorites]);
 
@@ -460,6 +496,20 @@ export default function App() {
         />
 
         <main className="flex-1">
+          {stripeReturn === 'success' && showStripeNotice && (
+            <div role="status" className="mx-auto mt-5 max-w-3xl px-4">
+              <div className="rounded-2xl border border-rose-200 bg-rose-50 p-5 text-center text-[#9B1C4E]">
+                <p className="text-2xl" aria-hidden="true">♡</p>
+                <p className="mt-2 font-semibold">{stripeNotice}</p>
+                <button type="button" className="mt-3 underline text-sm" onClick={() => {
+                  setShowStripeNotice(false);
+                  const url = new URL(window.location.href);
+                  url.searchParams.delete('stripe_test');
+                  window.history.replaceState(null, '', url.toString());
+                }}>{t.reservation.close}</button>
+              </div>
+            </div>
+          )}
           <Hero
             totalCount={visibleCatalog.length}
             favoritesCount={categoryCounts.favorites}
