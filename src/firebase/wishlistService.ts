@@ -308,6 +308,17 @@ export async function reserveGiftProduct(
     throw new Error('RESERVATION_LIMIT_REACHED');
   }
 
+  // Preliminary check only: the Worker and Firestore do not share an atomic lock.
+  const response = await fetch('/api/test/status', { cache: 'no-store' });
+  if (!response.ok) throw new Error('STRIPE_STATUS_UNAVAILABLE');
+  const stripeStatus = await response.json();
+  if (!Array.isArray(stripeStatus.paid) || !Array.isArray(stripeStatus.pending)) {
+    throw new Error('STRIPE_STATUS_UNAVAILABLE');
+  }
+  if (stripeStatus.paid.includes(product.id) || stripeStatus.pending.includes(product.id)) {
+    throw new Error('ALREADY_RESERVED');
+  }
+
   const code = generateReservationCode();
   const reservationDocId = await hashReservationCode(code);
   const expiresAtMs = Date.now() + RESERVATION_HOURS * 60 * 60 * 1000;
@@ -340,28 +351,18 @@ export async function reserveGiftProduct(
         throw new Error('ALREADY_RESERVED');
       }
 
-      const lockSnap = await tx.get(lockRef);
-
       tx.update(productRef, {
         status: 'reserved',
         reservedUntil: expiresAtTs,
         updatedAt: serverTimestamp(),
       });
 
-      if (lockSnap.exists()) {
-        tx.update(lockRef, {
-          reservationDocId,
-          expiresAt: expiresAtTs,
-          updatedAt: serverTimestamp(),
-        });
-      } else {
-        tx.set(lockRef, {
-          productId: product.id,
-          reservationDocId,
-          expiresAt: expiresAtTs,
-          updatedAt: serverTimestamp(),
-        });
-      }
+      tx.set(lockRef, {
+        productId: product.id,
+        reservationDocId,
+        expiresAt: expiresAtTs,
+        updatedAt: serverTimestamp(),
+      });
 
       tx.set(reservationRef, {
         productId: product.id,
