@@ -61,6 +61,33 @@ export function StripeOrders() {
   const [error, setError] = useState('');
   const [refresh, setRefresh] = useState(0);
 
+  const [checkingFirebase, setCheckingFirebase] = useState(false);
+  const [firebaseResult, setFirebaseResult] = useState('');
+
+  async function checkFirebase() {
+    setCheckingFirebase(true);
+    setFirebaseResult('');
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error('Accesso richiesto.');
+      const token = await user.getIdToken();
+      const response = await fetch('/api/admin/firebase-worker-check', {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: 'no-store',
+      });
+      const result = await response.json();
+      if (response.ok && result.authenticated === true) {
+        setFirebaseResult('Firebase Worker: autenticazione riuscita.');
+      } else {
+        setFirebaseResult('Firebase Worker: verifica fallita (HTTP ' + response.status + ').');
+      }
+    } catch {
+      setFirebaseResult('Firebase Worker: impossibile completare la verifica.');
+    } finally {
+      setCheckingFirebase(false);
+    }
+  }
+
   useEffect(() => {
     const controller = new AbortController();
     let active = true;
@@ -160,6 +187,14 @@ export function StripeOrders() {
             e nessun prodotto viene spedito automaticamente.
           </p>
         </div>
+      </div>
+
+      <div className="rounded-2xl border border-rose-200 bg-white p-4">
+        <button type="button" disabled={checkingFirebase} onClick={() => void checkFirebase()}
+          className="rounded-xl bg-[#C92A6D] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+          {checkingFirebase ? 'Verifica in corso...' : 'Verifica collegamento Firebase'}
+        </button>
+        {firebaseResult && <p role="status" className="mt-3 text-sm text-[#6B4E5C]">{firebaseResult}</p>}
       </div>
 
       {loading && (
