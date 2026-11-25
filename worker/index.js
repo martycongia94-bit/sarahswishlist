@@ -76,7 +76,7 @@ async function verify(raw, header, secret) {
 
 // FIREBASE ADMIN AUTHENTICATION
 
-async function verifyAdmin(req, env) {
+async function verifyAdmin(req, env, ownerOnly = false) {
   try {
     const token = req.headers
       .get('Authorization')
@@ -166,6 +166,8 @@ async function verifyAdmin(req, env) {
     if (claims.sub === env.FIREBASE_OWNER_UID) {
       return true;
     }
+
+    if (ownerOnly) return false;
 
     const admin = await fetch(
       `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(project)}/databases/${encodeURIComponent(database)}/documents/admins/${encodeURIComponent(claims.sub)}`,
@@ -280,6 +282,11 @@ export default {
       if (u.pathname === '/api/admin/migration-preflight' && req.method === 'GET') {
         if (!await verifyAdmin(req, env)) return json({error:'Unauthorized'},403);
         return orders.fetch('https://internal/admin/migration-preflight');
+      }
+
+      if (u.pathname === '/api/admin/migrate-locks' && req.method === 'POST') {
+        if (req.headers.get('Origin') !== u.origin || !await verifyAdmin(req, env, true)) return json({error:'Unauthorized'},403);
+        return orders.fetch('https://internal/admin/migrate-locks', {method:'POST'});
       }
 
       // PROTECTED ADMIN ORDERS
@@ -568,6 +575,31 @@ export class TestOrders {
         results.push({id:row.productId, available});
       }
       return json({test:true, ready:results.every(x=>x.available), products:results});
+    }
+
+    if (path === '/admin/migrate-locks' && req.method === 'POST') {
+      if (this.env.FIREBASE_CHECKOUT_MODE !== 'migration') return json({error:'Maintenance required'},409);
+      const rows = [...(await storage.list({prefix:'order:'})).values()];
+      if (rows.some(x => x.status === 'pending')) return json({error:'Pending orders exist'},409);
+      const paid = rows.filter(x => x.status === 'paid');
+      if (!paid.length || paid.some(x => !validIds([x.productId]) || !/^[a-zA-Z0-9_-]{1,128}$/.test(x.attempt || ''))) return json({error:'Invalid historical orders'},409);
+      const groups = new Map();
+      for (const row of paid) {
+        if (!groups.has(row.attempt)) groups.set(row.attempt, []);
+        groups.get(row.attempt).push(row.productId);
+      }
+      try {
+        for (const [attempt, ids] of groups) {
+          for (let i = 0; i < ids.length; i += 10) {
+            const batch = ids.slice(i,i+10);
+            await sharedCheckoutLock(this.env,batch,attempt,'acquire');
+            await sharedCheckoutLock(this.env,batch,attempt,'paid');
+          }
+        }
+        return json({test:true,migrated:paid.length});
+      } catch {
+        return json({error:'Migration incomplete; keep maintenance active and retry after review'},503);
+      }
     }
 
     // Read-only migration readiness diagnostic.
