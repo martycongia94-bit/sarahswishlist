@@ -58,6 +58,7 @@ import {
   type WishlistProductRecord,
 } from '../firebase/wishlistService';
 import type { Translations } from '../i18n/translations';
+import { StripeOrders } from './StripeOrders';
 
 interface SarahAdminAreaProps {
   isOpen: boolean;
@@ -73,7 +74,8 @@ type AdminTab =
   | 'reservations'
   | 'addresses'
   | 'publicNotes'
-  | 'security';
+  | 'security'
+  | 'stripeOrders';
 
 const EMPTY_PRODUCT: WishlistProductRecord = {
   id: '',
@@ -779,6 +781,7 @@ export function SarahAdminArea({
                   { id: 'addresses', label: t.admin.tabs.addresses, Icon: MapPin, badge: 0 },
                   { id: 'publicNotes', label: t.admin.tabs.publicNotes, Icon: ExternalLink, badge: 0 },
                   { id: 'security', label: t.admin.tabs.security, Icon: KeyRound, badge: 0 },
+                  { id: 'stripeOrders', label: 'Ordini Stripe', Icon: Package, badge: 0 },
                 ] as const
               ).map(({ id, label, Icon, badge }) => {
                 const active = activeTab === id;
@@ -804,6 +807,8 @@ export function SarahAdminArea({
                 );
               })}
             </div>
+
+            {activeTab === 'stripeOrders' && <StripeOrders />}
 
             {/* TAB 1: PRODUCTS, LINKS, IMAGES & RECEIVED */}
             {activeTab === 'products' && (
