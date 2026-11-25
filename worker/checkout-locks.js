@@ -20,8 +20,10 @@ export async function commitCheckoutLocks(env, token, ids, attempt, operation) {
       };
     }
     const response = await fetch(base + '/checkout_locks/' + id, { headers });
+    if (response.status === 404 && operation === 'release') return null;
     if (!response.ok) throw new Error('Lock read failed');
     const lock = await response.json();
+    if (operation === 'paid' && lock.fields?.attempt?.stringValue === attempt && lock.fields?.status?.stringValue === 'paid') return null;
     if (lock.fields?.attempt?.stringValue !== attempt || lock.fields?.status?.stringValue !== 'pending' || !lock.updateTime) {
       throw new Error('Lock ownership or state mismatch');
     }
@@ -34,8 +36,10 @@ export async function commitCheckoutLocks(env, token, ids, attempt, operation) {
       currentDocument
     };
   }));
+  const pendingWrites = writes.filter(Boolean);
+  if (!pendingWrites.length) return true;
   const response = await fetch(base + ':commit', {
-    method: 'POST', headers, body: JSON.stringify({ writes })
+    method: 'POST', headers, body: JSON.stringify({ writes: pendingWrites })
   });
   if (!response.ok) throw new Error('Lock commit failed: HTTP ' + response.status);
   return true;
