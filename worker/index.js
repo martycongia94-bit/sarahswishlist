@@ -1,5 +1,6 @@
 
 import catalog from './catalog.json';
+import { commitCheckoutLocks } from './checkout-locks.js';
 import firebaseConfig from '../firebase-applet-config.json';
 
 const json = (data, status = 200) =>
@@ -234,6 +235,12 @@ async function authenticateFirebaseWorker(env) {
     throw new Error('Unexpected Firebase worker identity');
   }
   return data.idToken;
+}
+
+// Shared checkout lock adapter, staged only until migration is complete.
+async function sharedCheckoutLock(env, ids, attempt, operation) {
+  const token = await authenticateFirebaseWorker(env);
+  return commitCheckoutLocks(env, token, ids, attempt, operation);
 }
 
 // MAIN WORKER
