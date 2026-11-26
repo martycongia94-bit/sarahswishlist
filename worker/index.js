@@ -288,7 +288,7 @@ export default {
                 null;
               crossmintError = candidate ? candidate.slice(0, 240) : 'Crossmint returned an error without a readable message';
             } catch {
-              await response.body?.cancel();
+              // response.json() has already consumed/locked the body; do not cancel it here.
               crossmintError = 'Crossmint returned a non-JSON error response';
             }
           } else {
