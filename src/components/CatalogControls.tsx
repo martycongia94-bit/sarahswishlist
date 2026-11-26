@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowDownUp, Check, Copy, Gift, Search, Trash2, X } from 'lucide-react';
+import { ArrowDownUp, Check, Copy, Gift, Search, Trash2, X, Gamepad2, Heart, Monitor, Package, PawPrint, Sparkles } from 'lucide-react';
 import type { CategoryId, SortOrder, Translations } from '../i18n/translations';
 
 interface CatalogControlsProps {
@@ -21,6 +21,7 @@ interface CatalogControlsProps {
   t: Translations;
 }
 
+const categoryIcons = {all:Gift,funko:Package,plush:PawPrint,gaming:Gamepad2,streaming:Monitor,accessories:Sparkles,favorites:Heart};
 const CATEGORY_ORDER: CategoryId[] = [
   'all',
   'funko',
@@ -139,6 +140,7 @@ export function CatalogControls({
         className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-[#FDF2F6] border border-rose-200/70"
       >
         {CATEGORY_ORDER.map((catId) => {
+          const CategoryIcon = categoryIcons[catId];
           const active = activeCategory === catId;
           const count = categoryCounts[catId] ?? 0;
           return (
@@ -157,7 +159,7 @@ export function CatalogControls({
                   : 'text-[#5E4451] hover:text-[#2D1B24] hover:bg-white/60 border border-transparent'
               }`}
             >
-              <span>{t.categories[catId]}</span>
+              <CategoryIcon className="w-4 h-4 shrink-0" aria-hidden="true"/><span className="flex-1 text-left">{t.categories[catId]}</span>
               <span
                 className={`tabular-nums text-xs ${
                   active ? 'text-[#C92A6D]/80' : 'text-[#8C6878]'
