@@ -404,7 +404,14 @@ export default {
         try { event=JSON.parse(new TextDecoder().decode(raw)); } catch { return json({error:'Invalid JSON'},400); }
         if (event.contract_version !== '1' || typeof event.event_id !== 'string' || !/^[a-f0-9-]{36}$/i.test(event.event_id) || !['gift_purchased','contribution_purchased','gift_crowdfunded'].includes(event.event_type)) return json({error:'Invalid event'},400);
         const diagnostic = env.ORDERS.get(env.ORDERS.idFromName('throne-diagnostic'));
-        return diagnostic.fetch('https://internal/throne-diagnostic',{method:'POST',body:JSON.stringify({id:event.event_id,type:event.event_type})});
+        const data = event.data && typeof event.data === 'object' ? event.data : {};
+        const safeText = (value, max = 180) => typeof value === 'string' ? value.trim().slice(0, max) : '';
+        const itemName = safeText(data.item_name);
+        const gifterUsername = safeText(data.gifter_username, 80);
+        const creatorUsername = safeText(data.creator_username, 80);
+        const currency = /^[A-Z]{3}$/.test(data.currency || '') ? data.currency : '';
+        const price = Number.isSafeInteger(data.price) && data.price >= 0 ? data.price : null;
+        return diagnostic.fetch('https://internal/throne-diagnostic',{method:'POST',body:JSON.stringify({id:event.event_id,type:event.event_type,itemName,gifterUsername,creatorUsername,currency,price})});
       }
 
       // STRIPE WEBHOOK
@@ -460,7 +467,7 @@ export class TestOrders {
 
     if (path === '/throne-diagnostic' && req.method === 'GET') {
       const rows = await storage.list({prefix:'throne:',limit:1000});
-      const events = [...rows].map(([key,value]) => ({id:key.slice(7),type:value.type,receivedAt:value.receivedAt}));
+      const events = [...rows].map(([key,value]) => ({id:key.slice(7),type:value.type,itemName:value.itemName || '',gifterUsername:value.gifterUsername || '',creatorUsername:value.creatorUsername || '',currency:value.currency || '',price:Number.isSafeInteger(value.price) ? value.price : null,receivedAt:value.receivedAt}));
       events.sort((a,b)=>b.receivedAt.localeCompare(a.receivedAt));
       return json({diagnostic:true,events:events.slice(0,50),scanLimited:rows.size===1000});
     }
@@ -470,7 +477,7 @@ export class TestOrders {
       const duplicate = await storage.transaction(async tx => {
         const key = 'throne:'+event.id;
         if (await tx.get(key)) return true;
-        await tx.put(key,{type:event.type,receivedAt:new Date().toISOString()});
+        await tx.put(key,{type:event.type,itemName:event.itemName,gifterUsername:event.gifterUsername,creatorUsername:event.creatorUsername,currency:event.currency,price:event.price,receivedAt:new Date().toISOString()});
         return false;
       });
       return json({received:true,diagnostic:true,duplicate});
