@@ -65,7 +65,6 @@ export function ProductCard({
   const cartText = cartTranslations[language] || cartTranslations.it;
 
   const throneUrl = product.url && /^https:\/\/throne\.com\/[a-zA-Z0-9_-]+\/item\/[0-9a-f-]{36}$/i.test(product.url) ? product.url : null;
-  const throneText = language === 'ro' ? 'Cumpără prin Throne' : language === 'en' ? 'Buy through Throne' : 'Acquista su Throne';
   const throneNote = language === 'ro' ? 'Prețul final este afișat pe Throne.' : language === 'en' ? 'Final price shown on Throne.' : 'Prezzo finale indicato su Throne.';
 
   return (
@@ -124,9 +123,10 @@ export function ProductCard({
 
           {throneUrl ? (
             <>
-              <a href={throneUrl} target="_blank" rel="noopener noreferrer" className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-xl bg-[#C92A6D] text-white min-h-11">
-                <Gift className="w-5 h-5" aria-hidden="true" />{throneText}<ArrowUpRight className="w-4 h-4" aria-hidden="true" />
-              </a>
+              <button type="button" disabled={isInCart || isPending || isReserving || !onAddToCart} onClick={() => onAddToCart?.(product)} className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-xl bg-[#C92A6D] text-white min-h-11 disabled:opacity-60">
+                {isInCart ? <Check className="w-5 h-5" aria-hidden="true" /> : <ShoppingCart className="w-5 h-5" aria-hidden="true" />}
+                {isPending ? cartText.pending : isInCart ? cartText.added : cartText.add}
+              </button>
               <p className="text-xs text-center text-[#7A5A69]">{throneNote}</p>
             </>
           ) : (<>
