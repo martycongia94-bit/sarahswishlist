@@ -278,8 +278,17 @@ export default {
           const status = response.status;
           await response.body?.cancel();
           return json({ configured, connectionVerified: status === 200, crossmintStatus: status, purchasesEnabled: false }, status === 200 ? 200 : 502);
-        } catch {
-          return json({ configured, connectionVerified: false, purchasesEnabled: false }, 503);
+        } catch (error) {
+          // Safe diagnostic only: expose the fetch failure class/message, never credentials.
+          const diagnosticError = error instanceof Error
+            ? `${error.name}: ${error.message}`.slice(0, 240)
+            : 'Unknown fetch error';
+          return json({
+            configured,
+            connectionVerified: false,
+            purchasesEnabled: false,
+            diagnosticError
+          }, 503);
         }
       }
 
