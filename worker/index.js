@@ -276,10 +276,12 @@ export default {
             signal: AbortSignal.timeout(10000)
           });
           const status = response.status;
+          const contentType = response.headers.get('content-type') || 'unknown';
           let crossmintError = null;
           if (!response.ok) {
+            const rawError = (await response.text()).slice(0, 600);
             try {
-              const payload = await response.json();
+              const payload = JSON.parse(rawError);
               const candidate =
                 (typeof payload?.message === 'string' && payload.message) ||
                 (typeof payload?.error === 'string' && payload.error) ||
@@ -288,8 +290,8 @@ export default {
                 null;
               crossmintError = candidate ? candidate.slice(0, 240) : 'Crossmint returned an error without a readable message';
             } catch {
-              // response.json() has already consumed/locked the body; do not cancel it here.
-              crossmintError = 'Crossmint returned a non-JSON error response';
+              // Return only a short, sanitized error excerpt; never return request headers or credentials.
+              crossmintError = rawError.replace(/[\\u0000-\\u001f\\u007f]/g, ' ').replace(/(?:sk|ck)_(?:test|staging|production)_[A-Za-z0-9_-]+/g, '[redacted-key]').trim().slice(0, 240) || 'Empty non-JSON error response';
             }
           } else {
             await response.body?.cancel();
@@ -298,6 +300,7 @@ export default {
             configured,
             connectionVerified: status === 200,
             crossmintStatus: status,
+            crossmintContentType: contentType,
             crossmintError,
             purchasesEnabled: false
           }, status === 200 ? 200 : 502);
