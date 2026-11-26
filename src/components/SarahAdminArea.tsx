@@ -75,7 +75,8 @@ type AdminTab =
   | 'addresses'
   | 'publicNotes'
   | 'security'
-  | 'stripeOrders';
+  | 'stripeOrders'
+  | 'crossmint';
 
 const EMPTY_PRODUCT: WishlistProductRecord = {
   id: '',
@@ -115,6 +116,30 @@ export function SarahAdminArea({
 
   // Dashboard tabs
   const [activeTab, setActiveTab] = useState<AdminTab>('products');
+  const [crossmintBusy, setCrossmintBusy] = useState(false);
+  const [crossmintResult, setCrossmintResult] = useState('');
+  const checkCrossmint = async () => {
+    setCrossmintBusy(true);
+    setCrossmintResult('');
+    try {
+      const current = auth.currentUser;
+      if (!current) throw new Error('Sessione non disponibile');
+      const token = await current.getIdToken();
+      const response = await fetch('/api/admin/crossmint-check', {
+        headers: { Authorization: 'Bearer ' + token },
+        cache: 'no-store'
+      });
+      const data = await response.json();
+      if (response.status === 403) setCrossmintResult('Accesso riservato al proprietario.');
+      else if (data.connectionVerified === true && response.ok) setCrossmintResult('Connessione Crossmint verificata. Acquisti disattivati.');
+      else if (data.configured === false) setCrossmintResult('Chiave Crossmint non configurata.');
+      else setCrossmintResult('Connessione non verificata. HTTP ' + response.status + (typeof data.crossmintStatus === 'number' ? ' / Crossmint ' + data.crossmintStatus : ''));
+    } catch {
+      setCrossmintResult('Verifica non riuscita. Riprova.');
+    } finally {
+      setCrossmintBusy(false);
+    }
+  };
   const [adminSearch, setAdminSearch] = useState('');
 
   // Product editor state
@@ -813,6 +838,7 @@ export function SarahAdminArea({
                   { id: 'publicNotes', label: t.admin.tabs.publicNotes, Icon: ExternalLink, badge: 0 },
                   { id: 'security', label: t.admin.tabs.security, Icon: KeyRound, badge: 0 },
                   { id: 'stripeOrders', label: 'Ordini Stripe', Icon: Package, badge: 0 },
+                  { id: 'crossmint', label: 'Crossmint', Icon: KeyRound, badge: 0 },
                 ] as const
               ).map(({ id, label, Icon, badge }) => {
                 const active = activeTab === id;
@@ -840,6 +866,16 @@ export function SarahAdminArea({
             </div>
 
             {activeTab === 'stripeOrders' && <StripeOrders />}
+            {activeTab === 'crossmint' && (
+              <section className="rounded-2xl border border-rose-200 bg-[#FDF2F6] p-5 space-y-4">
+                <h2 className="font-semibold text-[#C92A6D]">Crossmint</h2>
+                <p className="text-sm">Diagnostica riservata al proprietario. Acquisti reali disattivati.</p>
+                <button type="button" disabled={crossmintBusy} onClick={checkCrossmint} className="rounded-xl bg-[#C92A6D] text-white px-4 py-2 disabled:opacity-50">
+                  {crossmintBusy ? 'Verifica in corso…' : 'Verifica connessione Crossmint'}
+                </button>
+                <p role="status" className="text-sm">{crossmintResult}</p>
+              </section>
+            )}
 
             {/* TAB 1: PRODUCTS, LINKS, IMAGES & RECEIVED */}
             {activeTab === 'products' && (
