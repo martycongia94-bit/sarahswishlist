@@ -269,7 +269,10 @@ export default {
         const configured = Boolean(cleanSecret(env.CROSSMINT_SERVER_API_KEY));
         if (!configured) return json({ configured, connectionVerified: false, purchasesEnabled: false }, 503);
         try {
-          const response = await fetch('https://www.crossmint.com/api/unstable/agent-checkouts/buyer-profiles?limit=1', {
+          const crossmintHost = cleanSecret(env.CROSSMINT_SERVER_API_KEY).startsWith('sk_staging_')
+            ? 'https://staging.crossmint.com'
+            : 'https://www.crossmint.com';
+          const response = await fetch(crossmintHost + '/api/unstable/agent-checkouts/buyer-profiles?limit=1', {
             method: 'GET',
             headers: { 'X-API-KEY': cleanSecret(env.CROSSMINT_SERVER_API_KEY), Accept: 'application/json' },
             redirect: 'manual',
