@@ -382,6 +382,12 @@ export default {
         );
       }
 
+      if (u.pathname === '/api/admin/throne-events' && req.method === 'GET') {
+        if (!await verifyAdmin(req, env, true)) return json({error:'Unauthorized'},403);
+        const diagnostic = env.ORDERS.get(env.ORDERS.idFromName('throne-diagnostic'));
+        return diagnostic.fetch('https://internal/throne-diagnostic');
+      }
+
       if (u.pathname === '/api/webhooks/throne') {
         if (req.method !== 'POST') return json({error:'Method not allowed'},405);
         const t = req.headers.get('X-Signature-Timestamp') || '';
@@ -451,6 +457,13 @@ export class TestOrders {
   async fetch(req) {
     const path = new URL(req.url).pathname;
     const storage = this.ctx.storage;
+
+    if (path === '/throne-diagnostic' && req.method === 'GET') {
+      const rows = await storage.list({prefix:'throne:',limit:1000});
+      const events = [...rows].map(([key,value]) => ({id:key.slice(7),type:value.type,receivedAt:value.receivedAt}));
+      events.sort((a,b)=>b.receivedAt.localeCompare(a.receivedAt));
+      return json({diagnostic:true,events:events.slice(0,50),scanLimited:rows.size===1000});
+    }
 
     if (path === '/throne-diagnostic' && req.method === 'POST') {
       const event = await req.json();
