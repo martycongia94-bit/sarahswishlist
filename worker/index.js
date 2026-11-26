@@ -263,6 +263,13 @@ export default {
       const stripeKey = cleanSecret(env.STRIPE_SECRET_KEY);
       const secret = cleanSecret(env.STRIPE_WEBHOOK_SECRET);
 
+      // Crossmint configuration diagnostic: no external requests or purchases.
+      if (u.pathname === '/api/admin/crossmint-check' && req.method === 'GET') {
+        if (!await verifyAdmin(req, env, true)) return json({ error: 'Unauthorized' }, 403);
+        const configured = cleanSecret(env.CROSSMINT_SERVER_API_KEY).startsWith('sk_production_');
+        return json({ configured, connectionVerified: false, purchasesEnabled: false }, configured ? 200 : 503);
+      }
+
       // Admin-only, read-only identity diagnostic. Never returns credentials.
       if (u.pathname === '/api/admin/firebase-worker-check' && req.method === 'GET') {
         if (!await verifyAdmin(req, env)) return json({ error: 'Unauthorized' }, 403);
