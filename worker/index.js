@@ -266,7 +266,7 @@ export default {
       // Crossmint owner-only read-only API diagnostic: no purchases or profile disclosure.
       if (u.pathname === '/api/admin/crossmint-check' && req.method === 'GET') {
         if (!await verifyAdmin(req, env, true)) return json({ error: 'Unauthorized' }, 403);
-        const configured = cleanSecret(env.CROSSMINT_SERVER_API_KEY).startsWith('sk_production_');
+        const configured = Boolean(cleanSecret(env.CROSSMINT_SERVER_API_KEY));
         if (!configured) return json({ configured, connectionVerified: false, purchasesEnabled: false }, 503);
         try {
           const response = await fetch('https://www.crossmint.com/api/unstable/agent-checkouts/buyer-profiles?limit=1', {
