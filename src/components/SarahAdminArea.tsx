@@ -1867,7 +1867,7 @@ export function SarahAdminArea({
 }
 
 function ThroneDiagnostics({user}: {user: User}) {
-  const [events, setEvents] = useState<{id:string;type:string;receivedAt:string}[] | null>(null);
+  const [events, setEvents] = useState<{id:string;type:string;itemName?:string;gifterUsername?:string;creatorUsername?:string;currency?:string;price?:number|null;receivedAt:string}[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [limited, setLimited] = useState(false);
@@ -1886,7 +1886,7 @@ function ThroneDiagnostics({user}: {user: User}) {
   }
   return <section className="rounded-2xl bg-white border border-rose-200 p-6 space-y-4">
     <h2 className="font-display text-xl font-semibold text-[#2D1B24]">Throne — diagnostica webhook</h2>
-    <p className="text-sm text-[#6B4E5C]">Eventi autenticati e registrati. Nessuna modifica al catalogo, nessun acquisto. Un evento non dimostra che un ordine reale sia stato spedito.</p>
+    <p className="text-sm text-[#6B4E5C]">Eventi autenticati e registrati. I dettagli del regalo aiutano ad abbinarlo al catalogo; la ricezione di un webhook non prova da sola la spedizione o la consegna.</p>
     <button type="button" disabled={busy} onClick={refresh} className="px-5 py-3 rounded-xl bg-[#C92A6D] text-white disabled:opacity-60">{busy ? 'Caricamento...' : 'Verifica eventi ricevuti'}</button>
     {error && <p role="alert" className="text-sm text-[#9B1C4E]">{error}</p>}
     {events && <div className="space-y-2">
@@ -1894,7 +1894,7 @@ function ThroneDiagnostics({user}: {user: User}) {
       {limited && <p className="text-xs">Scansione limitata a 1000 registrazioni.</p>}
       {events.length === 0 && <p className="text-sm">Nessun evento registrato. Ripeti il test su Throne e aggiorna.</p>}
       {events.map(event => <div key={event.id} className="border border-rose-100 rounded-xl p-3 text-sm break-all">
-        <p className="font-semibold">{event.type}</p><p>{new Date(event.receivedAt).toLocaleString('it-IT')}</p><p className="text-xs text-[#6B4E5C]">{event.id}</p>
+        <p className="font-semibold">{event.type}</p>{event.itemName && <p>Regalo: <strong>{event.itemName}</strong></p>}{event.gifterUsername && <p>Da: {event.gifterUsername}</p>}{event.price !== null && event.price !== undefined && <p>Importo: {(event.price / 100).toFixed(2)} {event.currency || ""}</p>}<p>{new Date(event.receivedAt).toLocaleString("it-IT")}</p><p className="text-xs text-[#6B4E5C]">{event.id}</p>
       </div>)}
     </div>}
   </section>;
