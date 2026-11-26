@@ -276,8 +276,31 @@ export default {
             signal: AbortSignal.timeout(10000)
           });
           const status = response.status;
-          await response.body?.cancel();
-          return json({ configured, connectionVerified: status === 200, crossmintStatus: status, purchasesEnabled: false }, status === 200 ? 200 : 502);
+          let crossmintError = null;
+          if (!response.ok) {
+            try {
+              const payload = await response.json();
+              const candidate =
+                (typeof payload?.message === 'string' && payload.message) ||
+                (typeof payload?.error === 'string' && payload.error) ||
+                (typeof payload?.error?.message === 'string' && payload.error.message) ||
+                (typeof payload?.code === 'string' && payload.code) ||
+                null;
+              crossmintError = candidate ? candidate.slice(0, 240) : 'Crossmint returned an error without a readable message';
+            } catch {
+              await response.body?.cancel();
+              crossmintError = 'Crossmint returned a non-JSON error response';
+            }
+          } else {
+            await response.body?.cancel();
+          }
+          return json({
+            configured,
+            connectionVerified: status === 200,
+            crossmintStatus: status,
+            crossmintError,
+            purchasesEnabled: false
+          }, status === 200 ? 200 : 502);
         } catch (error) {
           // Safe diagnostic only: expose the fetch failure class/message, never credentials.
           const diagnosticError = error instanceof Error
