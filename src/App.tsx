@@ -937,6 +937,7 @@ export default function App() {
             className="wishlist-catalog py-10 sm:py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-28"
           >
             <div className="wishlist-sidebar">
+            <h2 className="wishlist-section-title">♡ {language === "it" ? "Categorie" : language === "ro" ? "Categorii" : "Categories"}</h2>
             <CatalogControls
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
@@ -961,6 +962,7 @@ export default function App() {
             />
             </div>
             <div className="wishlist-results">
+            <h2 className="wishlist-section-title">{t.nav.catalog}</h2>
             {!statusReady && (
               <div
                 role="status"
@@ -1093,10 +1095,10 @@ export default function App() {
             </div>
           </section>
 
-          <HowItWorks
+          <div className="wishlist-how"><HowItWorks
             publicSettings={publicSettings}
             t={t}
-          />
+          /></div>
 
         </main>
 
