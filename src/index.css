@@ -24,3 +24,32 @@
 .font-display {
   font-family: var(--font-display);
 }
+
+/* V3 neon storefront — scoped to public sections; dialogs retain their original palette. */
+.wishlist-neon { background: radial-gradient(ellipse at 80% 0%, #42142f 0%, #170d18 40%, #100a12 85%); color: #fff0f8; }
+.wishlist-neon > header { background: #21101fee; border-color: #71304e; }
+.wishlist-neon > header a[href="#top"], .wishlist-neon #top h1 { color: #ffb5d9; text-shadow: 0 0 20px #f04d9d99; }
+.wishlist-neon > header nav { color: #f6d4e6; }
+.wishlist-neon #top { margin: 1rem auto; width: min(96%, 1500px); border: 1px solid #a64776; border-radius: 24px; background: linear-gradient(110deg,#341127,#211020 65%,#461831); box-shadow: 0 0 30px #e44b941a; }
+.wishlist-neon #top p, .wishlist-neon #top .text-\[\#7A5A69\] { color: #f3c9df; }
+.wishlist-neon #top img { object-position: center; }
+.wishlist-neon .wishlist-catalog { max-width: 1500px; color: #f8dceb; }
+.wishlist-neon .wishlist-catalog > div:first-child { padding: 16px; border: 1px solid #71304e; border-radius: 18px; background: #241321; }
+.wishlist-neon .wishlist-catalog > div:first-child > div:nth-child(3) { color: #f3c9df; }
+.wishlist-neon .wishlist-catalog > div:first-child > div:nth-child(3) span { color: #fff0f8; }
+.wishlist-neon .wishlist-catalog [role="tablist"] { background: #35182e; border-color: #71304e; }
+.wishlist-neon .wishlist-catalog [role="tab"] { color: #f5d3e5; }
+.wishlist-neon .wishlist-catalog [role="tab"] span { color: inherit; }
+.wishlist-neon .wishlist-catalog [role="tab"][aria-selected="true"] { background: linear-gradient(110deg,#ad2464,#df438b); color: white; border-color: #f188b9; }
+.wishlist-neon .wishlist-catalog [role="tab"]:hover { background: #773153; color: white; }
+.wishlist-neon .wishlist-products article { background: linear-gradient(160deg,#fff4fa,#f5dce9); border-color: #d88bb0; box-shadow: 0 4px 20px #0004; }
+.wishlist-neon .wishlist-products article:hover { box-shadow: 0 0 22px #ef579a55; }
+.wishlist-neon .wishlist-products article button:not(:disabled):focus-visible { outline: 2px solid #ad2464; outline-offset: 2px; }
+@media (min-width: 1280px) {
+  .wishlist-neon .wishlist-products { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 18px; }
+}
+@media (max-width: 640px) {
+  .wishlist-neon #top { margin-top: 12px; border-radius: 18px; }
+  .wishlist-neon .wishlist-catalog > div:first-child { padding: 10px; }
+  .wishlist-neon .wishlist-products { gap: 16px; }
+}
