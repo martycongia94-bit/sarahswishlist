@@ -5,6 +5,7 @@ import { ShoppingBag, X, Trash2, Gift, LockKeyhole } from 'lucide-react';
 type CartProduct = {
   id: string | number;
   name: string;
+  url?: string | null;
 };
 
 type CartProps = {
@@ -76,6 +77,11 @@ export default function Cart({
 
   const t = translations[language] || translations.it;
 
+  const throneLink = (p: CartProduct) => p.url && /^https:\/\/throne\.com\/[a-zA-Z0-9_-]+\/item\/[0-9a-f-]{36}$/i.test(p.url) ? p.url : null;
+  const throneProducts = products.filter(p => throneLink(p));
+  const testProducts = products.filter(p => !throneLink(p));
+  const externalText = language === 'ro' ? 'Continuă pe Throne' : language === 'en' ? 'Proceed to Throne' : 'Procedi al pagamento su Throne';
+  const externalNote = language === 'ro' ? 'Cadourile Throne se cumpără separat. Prețul final este afișat pe Throne.' : language === 'en' ? 'Throne gifts are purchased individually. Final prices are shown on Throne.' : 'I regali Throne si acquistano singolarmente. Il prezzo finale è indicato su Throne.';
   const total = new Intl.NumberFormat(
     language === 'ro' ? 'ro-RO' :
     language === 'en' ? 'en-GB' : 'it-IT',
@@ -83,10 +89,10 @@ export default function Cart({
       style: 'currency',
       currency: 'EUR',
     }
-  ).format(products.length);
+  ).format(testProducts.length);
 
   async function checkout() {
-    if (busy || products.length === 0) return;
+    if (busy || testProducts.length === 0) return;
 
     setBusy(true);
     setError('');
@@ -98,7 +104,7 @@ export default function Cart({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          productIds: products.map(p => String(p.id)),
+          productIds: testProducts.map(p => String(p.id)),
           sender: sender.trim(),
         }),
       });
@@ -200,7 +206,7 @@ export default function Cart({
                     </p>
 
                     <p className="text-sm font-bold text-pink-600">
-                      1,00 €
+                      {throneLink(product) ? 'Throne' : '1,00 € (TEST)'}
                     </p>
                   </div>
 
@@ -221,6 +227,17 @@ export default function Cart({
 
         {products.length > 0 && (
           <footer className="space-y-4 border-t border-pink-100 bg-white p-5 pb-[max(20px,env(safe-area-inset-bottom))]">
+            {throneProducts.length > 0 && (
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">{externalNote}</p>
+                {throneProducts.map(p => (
+                  <a key={p.id} href={throneLink(p)!} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center rounded-2xl bg-pink-600 px-4 py-3 text-center font-bold text-white">
+                    <span>{externalText}</span><span className="text-xs font-normal">{p.name}</span>
+                  </a>
+                ))}
+              </div>
+            )}
+            {testProducts.length > 0 && (<>
             <div>
               <label
                 htmlFor="cart-sender"
@@ -277,6 +294,7 @@ export default function Cart({
             <p className="rounded-lg bg-amber-50 p-2 text-center text-xs font-medium text-amber-700">
               {t.test}
             </p>
+            </>)}
           </footer>
         )}
       </section>
