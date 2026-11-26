@@ -1,3 +1,4 @@
+import { Crown, Gift, Heart, ShoppingCart } from 'lucide-react';
 import heroImage from '../assets/images/hero_wishlist_banner_1794585021765.jpg';
 import type { Translations } from '../i18n/translations';
 
@@ -42,7 +43,7 @@ export function Hero({
             </div>
 
             <h1 className="font-display text-4xl sm:text-5xl font-semibold tracking-tight text-[#2D1B24] leading-[1.12] [text-wrap:balance]">
-              Sarah's Wishlist ♡
+              <Crown aria-hidden="true" className="wishlist-crown" />Sarah's Wishlist ♡
             </h1>
 
             <p className="mt-3 text-lg sm:text-xl font-medium text-[#A81E58] [text-wrap:balance]">
@@ -54,7 +55,7 @@ export function Hero({
             </p>
 
             <div className="wishlist-hero-stats" aria-label={t.nav.catalog}>
-              {[totalCount,reservedCount,cartCount].map((count,i)=><div key={i}><strong>{count}</strong><span>{labels[i]}</span></div>)}
+              {[totalCount,reservedCount,cartCount].map((count,i)=><div key={i}>{i === 0 ? <Gift aria-hidden="true"/> : i === 1 ? <Heart aria-hidden="true"/> : <ShoppingCart aria-hidden="true"/>}<strong>{count}</strong><span>{labels[i]}</span></div>)}
             </div>
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <a
@@ -77,7 +78,7 @@ export function Hero({
             </div>
           </div>
 
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-5 wishlist-portrait">
             <div className="h-64 sm:h-80 lg:h-full min-h-[260px] rounded-2xl overflow-hidden border border-rose-200/80 bg-[#FAE8EF] shadow-sm shadow-rose-900/5">
               <img
                 src="/sarah-angel.jpg"
