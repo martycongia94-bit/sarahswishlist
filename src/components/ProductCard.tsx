@@ -64,6 +64,10 @@ export function ProductCard({
   const storeLabel = product.store ?? t.card.storePending;
   const cartText = cartTranslations[language] || cartTranslations.it;
 
+  const throneUrl = product.url && /^https:\/\/throne\.com\/[a-zA-Z0-9_-]+\/item\/[0-9a-f-]{36}$/i.test(product.url) ? product.url : null;
+  const throneText = language === 'ro' ? 'Cumpără prin Throne' : language === 'en' ? 'Buy through Throne' : 'Acquista su Throne';
+  const throneNote = language === 'ro' ? 'Prețul final este afișat pe Throne.' : language === 'en' ? 'Final price shown on Throne.' : 'Prezzo finale indicato su Throne.';
+
   return (
     <article className="group relative flex flex-col rounded-2xl bg-white border border-rose-200/75 overflow-hidden shadow-xs shadow-rose-900/5 hover:-translate-y-0.5 hover:shadow-md hover:shadow-rose-900/8 transition-all duration-200">
 
@@ -118,6 +122,14 @@ export function ProductCard({
 
         <div className="mt-5 pt-4 border-t border-rose-100 space-y-2.5">
 
+          {throneUrl ? (
+            <>
+              <a href={throneUrl} target="_blank" rel="noopener noreferrer" className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-xl bg-[#C92A6D] text-white min-h-11">
+                <Gift className="w-5 h-5" aria-hidden="true" />{throneText}<ArrowUpRight className="w-4 h-4" aria-hidden="true" />
+              </a>
+              <p className="text-xs text-center text-[#7A5A69]">{throneNote}</p>
+            </>
+          ) : (<>
           {/* Pulsante carrello */}
 
           <button
@@ -202,6 +214,7 @@ export function ProductCard({
               <span>{t.card.linkUpdating}</span>
             </div>
           )}
+          </>)}
         </div>
       </div>
     </article>
