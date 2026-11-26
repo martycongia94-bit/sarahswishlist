@@ -272,7 +272,7 @@ export default {
           const response = await fetch('https://www.crossmint.com/api/unstable/agent-checkouts/buyer-profiles?limit=1', {
             method: 'GET',
             headers: { 'X-API-KEY': cleanSecret(env.CROSSMINT_SERVER_API_KEY), Accept: 'application/json' },
-            redirect: 'error',
+            redirect: 'manual',
             signal: AbortSignal.timeout(10000)
           });
           const status = response.status;
