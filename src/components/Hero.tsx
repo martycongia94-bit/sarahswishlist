@@ -3,6 +3,9 @@ import type { Translations } from '../i18n/translations';
 
 interface HeroProps {
   totalCount: number;
+  cartCount: number;
+  reservedCount: number;
+  language: "it" | "en" | "ro";
   favoritesCount: number;
   onSelectFavorites: () => void;
   t: Translations;
@@ -10,10 +13,14 @@ interface HeroProps {
 
 export function Hero({
   totalCount,
+  cartCount,
+  reservedCount,
+  language,
   favoritesCount,
   onSelectFavorites,
   t,
 }: HeroProps) {
+  const labels = {it:["Nel catalogo","Prenotati","Nel carrello"],en:["In catalog","Reserved","In cart"],ro:["În catalog","Rezervate","În coș"]}[language];
   return (
     <section
       id="top"
@@ -46,6 +53,9 @@ export function Hero({
               {t.hero.intro}
             </p>
 
+            <div className="wishlist-hero-stats" aria-label={t.nav.catalog}>
+              {[totalCount,reservedCount,cartCount].map((count,i)=><div key={i}><strong>{count}</strong><span>{labels[i]}</span></div>)}
+            </div>
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <a
                 href="#catalog"
@@ -70,9 +80,10 @@ export function Hero({
           <div className="lg:col-span-5">
             <div className="h-64 sm:h-80 lg:h-full min-h-[260px] rounded-2xl overflow-hidden border border-rose-200/80 bg-[#FAE8EF] shadow-sm shadow-rose-900/5">
               <img
-                src={heroImage}
+                src="/sarah-angel.jpg"
+                onError={(e) => { if (e.currentTarget.getAttribute("src") !== heroImage) e.currentTarget.src = heroImage; }}
                 alt={t.hero.imageAlt}
-                className="w-full h-full object-cover"
+                className="wishlist-angel-photo w-full h-full object-cover"
               />
             </div>
           </div>
