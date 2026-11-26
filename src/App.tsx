@@ -933,6 +933,7 @@ export default function App() {
             ref={catalogRef}
             className="wishlist-catalog py-10 sm:py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-28"
           >
+            <div className="wishlist-sidebar">
             <CatalogControls
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
@@ -955,7 +956,8 @@ export default function App() {
               onCopyFavorites={handleCopyFavorites}
               t={t}
             />
-
+            </div>
+            <div className="wishlist-results">
             {!statusReady && (
               <div
                 role="status"
@@ -1085,6 +1087,7 @@ export default function App() {
               </div>
             )}
 
+            </div>
           </section>
 
           <HowItWorks
