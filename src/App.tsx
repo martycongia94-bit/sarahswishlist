@@ -922,6 +922,9 @@ export default function App() {
             )}
 
           <Hero
+            language={language}
+            cartCount={cartProducts.length}
+            reservedCount={catalogProducts.filter(p => p.status === "reserved" && !isProductAvailableToVisitors(p, nowMs)).length}
             totalCount={visibleCatalog.length}
             favoritesCount={categoryCounts.favorites}
             onSelectFavorites={handleSelectFavorites}
