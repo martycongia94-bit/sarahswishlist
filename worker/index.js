@@ -263,11 +263,24 @@ export default {
       const stripeKey = cleanSecret(env.STRIPE_SECRET_KEY);
       const secret = cleanSecret(env.STRIPE_WEBHOOK_SECRET);
 
-      // Crossmint configuration diagnostic: no external requests or purchases.
+      // Crossmint owner-only read-only API diagnostic: no purchases or profile disclosure.
       if (u.pathname === '/api/admin/crossmint-check' && req.method === 'GET') {
         if (!await verifyAdmin(req, env, true)) return json({ error: 'Unauthorized' }, 403);
         const configured = cleanSecret(env.CROSSMINT_SERVER_API_KEY).startsWith('sk_production_');
-        return json({ configured, connectionVerified: false, purchasesEnabled: false }, configured ? 200 : 503);
+        if (!configured) return json({ configured, connectionVerified: false, purchasesEnabled: false }, 503);
+        try {
+          const response = await fetch('https://www.crossmint.com/api/unstable/agent-checkouts/buyer-profiles?limit=1', {
+            method: 'GET',
+            headers: { 'X-API-KEY': cleanSecret(env.CROSSMINT_SERVER_API_KEY), Accept: 'application/json' },
+            redirect: 'error',
+            signal: AbortSignal.timeout(10000)
+          });
+          const status = response.status;
+          await response.body?.cancel();
+          return json({ configured, connectionVerified: status === 200, crossmintStatus: status, purchasesEnabled: false }, status === 200 ? 200 : 502);
+        } catch {
+          return json({ configured, connectionVerified: false, purchasesEnabled: false }, 503);
+        }
       }
 
       // Admin-only, read-only identity diagnostic. Never returns credentials.
