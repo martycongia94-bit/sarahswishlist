@@ -873,7 +873,7 @@ export default function App() {
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="min-h-screen flex flex-col bg-[#FFFBFD] text-[#2D1B24]">
+      <div className="wishlist-neon min-h-screen flex flex-col bg-[#FFFBFD] text-[#2D1B24]">
 
         <Header
           language={language}
@@ -931,7 +931,7 @@ export default function App() {
           <section
             id="catalog"
             ref={catalogRef}
-            className="py-10 sm:py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-28"
+            className="wishlist-catalog py-10 sm:py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-28"
           >
             <CatalogControls
               searchQuery={searchQuery}
@@ -1018,7 +1018,7 @@ export default function App() {
             )}
 
             {filteredProducts.length > 0 ? (
-              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="wishlist-products mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
                 {filteredProducts.map((product) => (
                   <ProductCard
