@@ -263,64 +263,6 @@ export default {
       const stripeKey = cleanSecret(env.STRIPE_SECRET_KEY);
       const secret = cleanSecret(env.STRIPE_WEBHOOK_SECRET);
 
-      // Crossmint owner-only read-only API diagnostic: no purchases or profile disclosure.
-      if (u.pathname === '/api/admin/crossmint-check' && req.method === 'GET') {
-        if (!await verifyAdmin(req, env, true)) return json({ error: 'Unauthorized' }, 403);
-        const configured = Boolean(cleanSecret(env.CROSSMINT_SERVER_API_KEY));
-        if (!configured) return json({ configured, connectionVerified: false, purchasesEnabled: false }, 503);
-        try {
-          const crossmintHost = cleanSecret(env.CROSSMINT_SERVER_API_KEY).startsWith('sk_staging_')
-            ? 'https://staging.crossmint.com'
-            : 'https://www.crossmint.com';
-          const response = await fetch(crossmintHost + '/api/unstable/agent-checkouts/buyer-profiles?limit=1', {
-            method: 'GET',
-            headers: { 'X-API-KEY': cleanSecret(env.CROSSMINT_SERVER_API_KEY), Accept: 'application/json' },
-            redirect: 'manual',
-            signal: AbortSignal.timeout(10000)
-          });
-          const status = response.status;
-          const contentType = response.headers.get('content-type') || 'unknown';
-          let crossmintError = null;
-          if (!response.ok) {
-            const rawError = (await response.text()).slice(0, 600);
-            try {
-              const payload = JSON.parse(rawError);
-              const candidate =
-                (typeof payload?.message === 'string' && payload.message) ||
-                (typeof payload?.error === 'string' && payload.error) ||
-                (typeof payload?.error?.message === 'string' && payload.error.message) ||
-                (typeof payload?.code === 'string' && payload.code) ||
-                null;
-              crossmintError = candidate ? candidate.slice(0, 240) : 'Crossmint returned an error without a readable message';
-            } catch {
-              // Return only a short, sanitized error excerpt; never return request headers or credentials.
-              crossmintError = rawError.replace(/[\\u0000-\\u001f\\u007f]/g, ' ').replace(/(?:sk|ck)_(?:test|staging|production)_[A-Za-z0-9_-]+/g, '[redacted-key]').trim().slice(0, 240) || 'Empty non-JSON error response';
-            }
-          } else {
-            await response.body?.cancel();
-          }
-          return json({
-            configured,
-            connectionVerified: status === 200,
-            crossmintStatus: status,
-            crossmintContentType: contentType,
-            crossmintError,
-            purchasesEnabled: false
-          }, status === 200 ? 200 : 502);
-        } catch (error) {
-          // Safe diagnostic only: expose the fetch failure class/message, never credentials.
-          const diagnosticError = error instanceof Error
-            ? `${error.name}: ${error.message}`.slice(0, 240)
-            : 'Unknown fetch error';
-          return json({
-            configured,
-            connectionVerified: false,
-            purchasesEnabled: false,
-            diagnosticError
-          }, 503);
-        }
-      }
-
       // Admin-only, read-only identity diagnostic. Never returns credentials.
       if (u.pathname === '/api/admin/firebase-worker-check' && req.method === 'GET') {
         if (!await verifyAdmin(req, env)) return json({ error: 'Unauthorized' }, 403);
