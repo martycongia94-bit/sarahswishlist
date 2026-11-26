@@ -382,6 +382,25 @@ export default {
         );
       }
 
+      if (u.pathname === '/api/webhooks/throne') {
+        if (req.method !== 'POST') return json({error:'Method not allowed'},405);
+        const t = req.headers.get('X-Signature-Timestamp') || '';
+        const sig = req.headers.get('X-Signature-Ed25519') || '';
+        if (!/^\d{1,12}$/.test(t) || Math.abs(Date.now()/1000-Number(t)) > 300 || !/^[a-fA-F0-9]{128}$/.test(sig)) return json({error:'Invalid signature headers'},400);
+        const raw = new Uint8Array(await req.arrayBuffer());
+        if (raw.length > 65536) return json({error:'Payload too large'},413);
+        const prefix = new TextEncoder().encode(t+'.');
+        const message = new Uint8Array(prefix.length+raw.length);
+        message.set(prefix); message.set(raw,prefix.length);
+        const key = await crypto.subtle.importKey('spki',Uint8Array.from(atob('MCowBQYDK2VwAyEAPXbUfxh7XL4SYUVcfhmYMIbxvtR9E9LDd8gPJ1PwSD8='),c=>c.charCodeAt(0)),{name:'Ed25519'},false,['verify']);
+        if (!await crypto.subtle.verify('Ed25519',key,Uint8Array.from(sig.match(/../g),x=>parseInt(x,16)),message)) return json({error:'Invalid signature'},401);
+        let event;
+        try { event=JSON.parse(new TextDecoder().decode(raw)); } catch { return json({error:'Invalid JSON'},400); }
+        if (event.contract_version !== '1' || typeof event.event_id !== 'string' || !/^[a-f0-9-]{36}$/i.test(event.event_id) || !['gift_purchased','contribution_purchased','gift_crowdfunded'].includes(event.event_type)) return json({error:'Invalid event'},400);
+        const diagnostic = env.ORDERS.get(env.ORDERS.idFromName('throne-diagnostic'));
+        return diagnostic.fetch('https://internal/throne-diagnostic',{method:'POST',body:JSON.stringify({id:event.event_id,type:event.event_type})});
+      }
+
       // STRIPE WEBHOOK
 
       if (
@@ -432,6 +451,17 @@ export class TestOrders {
   async fetch(req) {
     const path = new URL(req.url).pathname;
     const storage = this.ctx.storage;
+
+    if (path === '/throne-diagnostic' && req.method === 'POST') {
+      const event = await req.json();
+      const duplicate = await storage.transaction(async tx => {
+        const key = 'throne:'+event.id;
+        if (await tx.get(key)) return true;
+        await tx.put(key,{type:event.type,receivedAt:new Date().toISOString()});
+        return false;
+      });
+      return json({received:true,diagnostic:true,duplicate});
+    }
 
     // ADMIN ORDER HISTORY
 
