@@ -133,7 +133,7 @@ export function SarahAdminArea({
       if (response.status === 403) setCrossmintResult('Accesso riservato al proprietario.');
       else if (data.connectionVerified === true && response.ok) setCrossmintResult('Connessione Crossmint verificata. Acquisti disattivati.');
       else if (data.configured === false) setCrossmintResult('Chiave Crossmint non configurata.');
-      else setCrossmintResult('Connessione non verificata. HTTP ' + response.status + (typeof data.crossmintStatus === 'number' ? ' / Crossmint ' + data.crossmintStatus : ''));
+      else setCrossmintResult('Connessione non verificata. HTTP ' + response.status + (typeof data.crossmintStatus === 'number' ? ' / Crossmint ' + data.crossmintStatus : '') + (typeof data.diagnosticError === 'string' ? ' — ' + data.diagnosticError : ''));
     } catch {
       setCrossmintResult('Verifica non riuscita. Riprova.');
     } finally {
