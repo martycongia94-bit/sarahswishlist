@@ -168,3 +168,10 @@
 .wishlist-neon > header [role="group"] button[aria-pressed="true"]{background:#b81765;color:white;}
 .wishlist-neon > header button.bg-\[\#FDF2F6\],.wishlist-neon #top button{background:#291025;color:#ffd1e9;border-color:#a33770;}
 @media(max-width:1250px){.wishlist-neon #top .wishlist-hero-stats{grid-template-columns:repeat(2,minmax(0,1fr));}}
+
+.wishlist-header-search,.wishlist-catalog-heading select{background:#180b16;color:#fff0fa;border-color:#a33770;color-scheme:dark;}
+.wishlist-catalog-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}.wishlist-catalog-heading p{color:#e6b7d1;font-size:.85rem;}
+.wishlist-neon .wishlist-sidebar > div > div:first-child > button{background:#291025;color:#ffd1e9;border-color:#a33770;}
+.wishlist-filter-panel{border-top:1px solid #81335c;padding-top:12px;}.wishlist-filter-panel input{accent-color:#df3487;}
+.wishlist-neon > header nav{gap:12px;}
+.wishlist-neon #top::after{content:"♡  ✧  ♡";position:absolute;right:43%;top:5%;color:#ff9bce;text-shadow:0 0 10px #ff258b;pointer-events:none;opacity:.65;}
