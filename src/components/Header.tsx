@@ -1,5 +1,5 @@
 
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Crown, Search } from 'lucide-react';
 import type { Language, Translations } from '../i18n/translations';
 
 interface HeaderProps {
@@ -52,7 +52,7 @@ export function Header({
           href="#top"
           className="font-display text-base sm:text-xl font-semibold tracking-tight text-[#2D1B24] whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C92A6D] rounded-md"
         >
-          Sarah's Wishlist ♡
+          <Crown className="wishlist-logo-crown" aria-hidden="true" /> Sarah's Wishlist ♡
         </a>
 
         {/* Navigazione desktop */}
@@ -73,7 +73,7 @@ export function Header({
             onClick={onSelectFavorites}
             className="hover:text-[#C92A6D] transition-colors duration-150 whitespace-nowrap py-1 underline-offset-4 hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C92A6D] rounded"
           >
-            {t.nav.favorites}
+            Wishlist
           </button>
 
           <button type="button" onClick={onReserved} className="whitespace-nowrap">{language === 'it' ? 'Prenotati' : language === 'ro' ? 'Rezervate' : 'Reserved'}</button>
@@ -134,7 +134,7 @@ export function Header({
             </span>
 
             <span className="tabular-nums">
-              {favoritesCount}
+              <span className="hidden xl:inline">{t.nav.favorites} </span>{favoritesCount}
             </span>
           </button>
 
