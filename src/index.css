@@ -145,3 +145,16 @@
  .wishlist-neon .wishlist-sidebar .wishlist-section-title {font-size:1rem;}
 }
 @media(min-width:1450px){.wishlist-neon .wishlist-results .wishlist-products {grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;}}
+
+
+/* Reference polish: compact premium catalog cards */
+.wishlist-neon .wishlist-products article {background:linear-gradient(155deg,#f8b4d8,#ffe8f4 55%,#f4a9d0);border:1px solid #ff8ac4;box-shadow:0 0 8px #ff399555,inset 0 0 12px #fff5;transition:transform .2s,box-shadow .2s;}
+.wishlist-neon .wishlist-products article:hover {box-shadow:0 0 22px #ff399588;transform:translateY(-3px);}
+.wishlist-neon .wishlist-products article > div:first-of-type {background:radial-gradient(ellipse,#fff 30%,#f9d4e8 100%);border-bottom:1px solid #eaa2c8;padding:12px;}
+.wishlist-neon .wishlist-products article h3 {font-size:.95rem;font-weight:750;color:#351027;}
+.wishlist-neon .wishlist-products article > div:last-child > p {display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.wishlist-neon .wishlist-products article > div:last-child > div:last-child > button:first-child:not(:disabled) {background:linear-gradient(100deg,#b81765,#df3487);box-shadow:0 3px 10px #ad246455;}
+.wishlist-neon .wishlist-products article > div:last-child > div:last-child > button:nth-of-type(2) {background:#f8e4f3;color:#792451;border-color:#c47aa6;}
+.wishlist-neon .wishlist-products article > div:last-child > div:last-child > a {background:#fff0f8;color:#71304e;border-color:#d88bb0;}
+.wishlist-neon .wishlist-products article > button:first-child {width:36px;height:36px;top:9px;right:9px;}
+@media(max-width:640px){.wishlist-neon .wishlist-products article h3{font-size:.85rem;}.wishlist-neon .wishlist-products article > div:first-of-type{padding:7px;}.wishlist-neon .wishlist-products article > div:last-child > p{-webkit-line-clamp:2;}}
