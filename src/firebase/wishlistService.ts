@@ -176,7 +176,10 @@ function mapFirestoreProduct(
   docId: string,
   data: Record<string, unknown>
 ): WishlistProductRecord {
-  const rawUrl = typeof data.url === 'string' ? data.url : '';
+  const savedUrl = typeof data.url === 'string' ? data.url : '';
+  const catalogItem = PRODUCTS.find(item => item.id === docId && item.name === data.name);
+  const catalogUrl = catalogItem?.url;
+  const rawUrl = catalogUrl && /^https:\/\/throne\.com\/sarah15petkovic\/item\/[0-9a-f-]{36}$/i.test(catalogUrl) ? catalogUrl : savedUrl;
   const rawStore = typeof data.store === 'string' ? data.store : '';
   const rawImage = typeof data.image === 'string' ? data.image : '';
   const received = Boolean(data.received);
