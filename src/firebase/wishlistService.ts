@@ -176,6 +176,7 @@ function mapFirestoreProduct(
   docId: string,
   data: Record<string, unknown>
 ): WishlistProductRecord {
+  // Prefer matching catalog gift links without changing stored reservations.
   const savedUrl = typeof data.url === 'string' ? data.url : '';
   const catalogItem = PRODUCTS.find(item => item.id === docId && item.name === data.name);
   const catalogUrl = catalogItem?.url;
