@@ -1114,6 +1114,10 @@ export default function App() {
             t={t}
           /></div>
 
+          <section id="faq" className="wishlist-faq">
+            <h2>FAQ ♡</h2>
+            {({it:[['Come acquisto un regalo?','Aggiungi il regalo al carrello. Per i prodotti Throne, prosegui sul sito Throne per completare il pagamento.'],['Il prezzo è definitivo?','Per i prodotti Throne il prezzo definitivo, comprese eventuali spese, è indicato sul sito Throne.'],['Come gestisco una prenotazione?','Usa Gestisci prenotazione e il tuo codice.']],en:[['How do I buy a gift?','Add a gift to your cart. For Throne products, continue to Throne to complete payment.'],['Is the price final?','The final price and any fees for Throne products are shown on Throne.'],['How do I manage a reservation?','Use Manage reservation and your code.']],ro:[['Cum cumpăr un cadou?','Adaugă cadoul în coș. Pentru produsele Throne, continuă pe Throne pentru plată.'],['Prețul este final?','Prețul final și eventualele taxe pentru produsele Throne sunt afișate pe Throne.'],['Cum gestionez o rezervare?','Folosește gestionarea rezervării și codul tău.']]}[language]).map(([q,a])=><details key={q}><summary>{q}</summary><p>{a}</p></details>)}
+          </section>
         </main>
 
         <Footer
