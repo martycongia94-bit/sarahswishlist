@@ -65,6 +65,7 @@ export function ProductCard({
   const cartText = cartTranslations[language] || cartTranslations.it;
 
   const throneUrl = product.url && /^https:\/\/throne\.com\/[a-zA-Z0-9_-]+\/item\/[0-9a-f-]{36}$/i.test(product.url) ? product.url : null;
+  const stripeAllowed = ['1','5','6','30'].includes(product.id);
   const throneNote = language === 'ro' ? 'Prețul final este afișat pe Throne.' : language === 'en' ? 'Final price shown on Throne.' : 'Prezzo finale indicato su Throne.';
 
   return (
@@ -133,7 +134,10 @@ export function ProductCard({
                 {isReserving ? t.card.reservingButton : t.card.reserveButton}
               </button>
             </>
-          ) : (<>
+          ) : !stripeAllowed ? (<>
+          <p className="text-xs text-center">{t.card.linkUpdating}</p>
+          <button type="button" disabled={isReserving || isPending || isInCart} onClick={() => onReserve(product)} className="w-full rounded-xl border border-rose-400 px-3 py-3 text-sm font-semibold">{t.card.reserveButton}</button>
+          </>) : (<>
           {/* Pulsante carrello */}
 
           <button
