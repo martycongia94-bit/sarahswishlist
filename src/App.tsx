@@ -922,6 +922,7 @@ export default function App() {
             )}
 
           <Hero
+            purchasedCount={catalogProducts.filter(p => p.status === 'confirmed' || p.status === 'received').length}
             language={language}
             cartCount={cartProducts.length}
             reservedCount={catalogProducts.filter(p => p.status === "reserved" && !isProductAvailableToVisitors(p, nowMs)).length}
