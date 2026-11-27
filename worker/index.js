@@ -357,7 +357,7 @@ export default {
         const productIds =
           body.productIds ?? [body.productId];
 
-        if (!validIds(productIds)) {
+        if (!validIds(productIds) || !productIds.every(id => ['1','5','6','30'].includes(id))) {
           return json(
             { error: 'Unknown or duplicate product' },
             400
@@ -703,7 +703,7 @@ export class TestOrders {
         origin
       } = await req.json();
 
-      if (!validIds(productIds)) {
+      if (!validIds(productIds) || !productIds.every(id => ['1','5','6','30'].includes(id))) {
         return json(
           { error: 'Unknown product' },
           400
