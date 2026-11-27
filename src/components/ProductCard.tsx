@@ -128,6 +128,10 @@ export function ProductCard({
                 {isPending ? cartText.pending : isInCart ? cartText.added : cartText.add}
               </button>
               <p className="text-xs text-center text-[#7A5A69]">{throneNote}</p>
+              <button type="button" disabled={isReserving || isPending || isInCart} onClick={() => onReserve(product)} className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl bg-[#FDF2F6] text-[#C92A6D] border border-rose-200 hover:bg-rose-100 disabled:opacity-60 min-h-11">
+                <Gift className="w-4 h-4 shrink-0" aria-hidden="true" />
+                {isReserving ? t.card.reservingButton : t.card.reserveButton}
+              </button>
             </>
           ) : (<>
           {/* Pulsante carrello */}
