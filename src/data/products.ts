@@ -35,7 +35,7 @@ export const PRODUCTS: Product[] = [
     brand: 'Funko',
     category: 'funko',
     store: 'Galactus.it',
-    url: 'https://shop.galactus.it/prodotto/funko-pop-black-clover-n-1101-yuno/',
+    url: 'https://throne.com/sarah15petkovic/item/f5fc5c0a-83f0-4259-96fa-9e748bdd7324',
     image: '/products/2_yuno.webp',
     description: {
       it: 'Funko Pop! n. 1101 di Yuno dalla serie anime Black Clover, ideale per la mensola da collezione.',
@@ -107,7 +107,7 @@ export const PRODUCTS: Product[] = [
     brand: 'Black Clover',
     category: 'plush',
     store: 'Zaffiro Games',
-    url: 'https://www.zaffirogames.it/product/40667217/black-clover-plush-figure-nero-22-cm',
+    url: 'https://throne.com/sarah15petkovic/item/005417e7-251a-4ee6-bea5-519a828be26a',
     image: '/products/7_nero.jpg',
     description: {
       it: 'Morbido peluche ufficiale di Nero (22 cm) ispirato all’anime Black Clover.',
@@ -121,7 +121,7 @@ export const PRODUCTS: Product[] = [
     brand: 'Hunter × Hunter',
     category: 'plush',
     store: 'Amazon.it',
-    url: 'https://www.amazon.it/dp/B09KMF893R',
+    url: 'https://throne.com/sarah15petkovic/item/7a17cbd8-10c4-4bf4-aa88-af937ced5935',
     image: '/products/8_gon_plush.jpg',
     description: {
       it: 'Peluche da collezione raffigurante Gon Freecss di Hunter × Hunter, soffice e curato.',
@@ -135,7 +135,7 @@ export const PRODUCTS: Product[] = [
     brand: 'Hunter × Hunter',
     category: 'plush',
     store: 'Amazon.it',
-    url: 'https://www.amazon.it/dp/B0BSQTVQHP',
+    url: 'https://throne.com/sarah15petkovic/item/c10a2b0f-7af9-4086-b712-19c2ae03c253',
     image: '/products/9_killua_plush.jpg',
     description: {
       it: 'Peluche da collezione raffigurante Killua Zoldyck di Hunter × Hunter, perfetto per la postazione.',
@@ -149,7 +149,7 @@ export const PRODUCTS: Product[] = [
     brand: 'Demon Slayer',
     category: 'plush',
     store: 'Oggetti Fantastici',
-    url: 'https://oggettifantastici.com/prodotto/demon-slayer-nezuko-peluche-30-cm-licenza-ufficiale/',
+    url: 'https://throne.com/sarah15petkovic/item/8c688347-7c6b-4904-a3ae-f679860321a3',
     image: '/products/10_nezuko.jpg',
     description: {
       it: 'Peluche con licenza ufficiale di Nezuko Kamado alto 30 cm dalla serie Demon Slayer.',
@@ -207,7 +207,7 @@ export const PRODUCTS: Product[] = [
     brand: 'AMD',
     category: 'gaming',
     store: 'AMD',
-    url: 'https://www.amd.com/en/products/processors/desktops/ryzen/9000-series/amd-ryzen-9-9950x.html',
+    url: 'https://throne.com/sarah15petkovic/item/4542b2ee-3a8a-4fa3-bdbc-5259b55e3341',
     image: '/products/14_ryzen.jpg',
     description: {
       it: 'CPU desktop architettura Zen 5 a 16 core / 32 thread per gaming, rendering e streaming simultaneo.',
@@ -235,7 +235,7 @@ export const PRODUCTS: Product[] = [
     brand: 'ASUS ROG',
     category: 'gaming',
     store: 'ASUS ROG',
-    url: 'https://rog.asus.com/it/motherboards/rog-strix/rog-strix-b850-e-gaming-wifi/',
+    url: 'https://throne.com/sarah15petkovic/item/2659cd0c-ee39-494e-b2e5-20b70cf99be4',
     image: '/products/16_asus_b850e.webp',
     description: {
       it: 'Scheda madre ROG Strix B850-E Gaming WiFi con socket AM5, supporto PCIe 5.0 e connettività moderna.',
@@ -263,7 +263,7 @@ export const PRODUCTS: Product[] = [
     brand: 'Samsung',
     category: 'gaming',
     store: 'Samsung',
-    url: 'https://www.samsung.com/us/computing/memory-storage/solid-state-drives/990-pro-pcie-4-0-nvme-ssd-4tb-mz-v9p4t0b-am/',
+    url: 'https://throne.com/sarah15petkovic/item/13b21294-7c66-4ab7-9a6f-40ac4388e3fb',
     image: '/products/18_samsung_990_4tb.png',
     description: {
       it: 'Unità SSD NVMe M.2 PCIe 4.0 da 4 TB ad altissima velocità per librerie di giochi e registrazioni.',
@@ -277,7 +277,7 @@ export const PRODUCTS: Product[] = [
     brand: 'Samsung',
     category: 'gaming',
     store: 'Samsung',
-    url: 'https://www.samsung.com/us/computing/memory-storage/solid-state-drives/990-pro-pcie-4-0-nvme-ssd-2tb-mz-v9p2t0b-am/',
+    url: 'https://throne.com/sarah15petkovic/item/de26924c-1462-4de4-9c40-1f2992099765',
     image: '/products/19_samsung_990_2tb.png',
     description: {
       it: 'Unità SSD NVMe M.2 PCIe 4.0 da 2 TB con lettura sequenziale rapida per sistema operativo e app.',
@@ -403,7 +403,7 @@ export const PRODUCTS: Product[] = [
     brand: 'LG',
     category: 'gaming',
     store: 'LG Italia',
-    url: 'https://www.lg.com/it/monitor/gaming/27gr75q-b/',
+    url: 'https://throne.com/sarah15petkovic/item/d999c1b3-c1c4-4083-9917-94c19bad432a',
     image: '/products/28_lg_27gr75q.jpg',
     description: {
       it: 'Monitor gaming IPS da 27" QHD (2560×1440) a 165 Hz con tempo di risposta di 1 ms.',
@@ -417,7 +417,7 @@ export const PRODUCTS: Product[] = [
     brand: 'LG',
     category: 'gaming',
     store: 'Amazon.it',
-    url: 'https://www.amazon.it/dp/B0GXZQH1G6',
+    url: 'https://throne.com/sarah15petkovic/item/0692d6ab-29bd-4db1-bf98-40cbc8d8d3bd',
     image: '/products/29_lg_27us50.jpg',
     description: {
       it: 'Monitor LG da 27" Ultra HD 4K IPS con supporto HDR10 per nitidezza e fedeltà cromatica.',
@@ -445,7 +445,7 @@ export const PRODUCTS: Product[] = [
     brand: 'Logitech G',
     category: 'gaming',
     store: 'Logitech G',
-    url: 'https://www.logitechg.com/it-it/shop/p/g502-x-plus-wireless-lightforce',
+    url: 'https://throne.com/sarah15petkovic/item/ee61629d-e8e6-45e5-bbe6-bc494d6a452b',
     image: '/products/31_logitech_g502x.png',
     description: {
       it: 'Mouse wireless con switch ottico-meccanici LIGHTFORCE, sensore HERO 25K e illuminazione RGB.',
@@ -461,7 +461,7 @@ export const PRODUCTS: Product[] = [
     brand: 'OHAANYY',
     category: 'streaming',
     store: 'Amazon.it',
-    url: 'https://www.amazon.it/dp/B0H6B7HH2X',
+    url: 'https://throne.com/sarah15petkovic/item/7caadd18-2852-4d35-beab-480e5a08bd5c',
     image: '/products/32_ohaanyy.jpg',
     description: {
       it: 'Cuffie over-ear comode per lunghe sessioni di ascolto, gaming e monitoraggio vocale.',
@@ -489,7 +489,7 @@ export const PRODUCTS: Product[] = [
     brand: 'Elgato',
     category: 'streaming',
     store: 'Amazon.it',
-    url: 'https://amzn.eu/d/0bdSlc50',
+    url: 'https://throne.com/sarah15petkovic/item/1ed3f573-e423-42e4-ac03-ec5047b34f4e',
     image: '/products/34_stream_deck_neo.jpg',
     description: {
       it: 'Controller compatto con 8 tasti LCD personalizzabili e Infobar per controllare scene e scorciatoie.',
@@ -517,7 +517,7 @@ export const PRODUCTS: Product[] = [
     brand: 'Elgato',
     category: 'streaming',
     store: 'Elgato',
-    url: 'https://www.elgato.com/it/it/p/game-capture-4k-s',
+    url: 'https://throne.com/sarah15petkovic/item/23d7ae9b-69a5-4c4f-bff0-a99958e52cf9',
     image: '/products/36_game_capture.webp',
     description: {
       it: 'Scheda di acquisizione esterna 4K60 HDR portatile per catturare console e gameplay in alta qualità.',
