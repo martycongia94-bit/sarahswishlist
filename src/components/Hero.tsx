@@ -49,11 +49,11 @@ export function Hero({
             </h1>
 
             <p className="mt-3 text-lg sm:text-xl font-medium text-[#A81E58] [text-wrap:balance]">
-              {t.hero.subtitle}
+              {({it:'La wishlist ufficiale di Sarah',en:'Sarah’s official wishlist',ro:'Lista oficială de dorințe a lui Sarah'})[language]}
             </p>
 
             <p className="mt-4 text-base text-[#5E4451] leading-relaxed max-w-2xl">
-              {t.hero.intro}
+              {({it:'Scegli un regalo e aiutami a realizzare i miei sogni! ♡',en:'Choose a gift and help make my dreams come true! ♡',ro:'Alege un cadou și ajută-mă să-mi îndeplinesc visurile! ♡'})[language]}
             </p>
 
             <div className="wishlist-hero-stats" aria-label={t.nav.catalog}>
