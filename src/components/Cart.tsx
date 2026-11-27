@@ -136,7 +136,7 @@ export default function Cart({
   return (
     <div className="fixed inset-0 z-[100] flex justify-end">
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/75 backdrop-blur-sm"
         onClick={() => !busy && onClose()}
       />
 
@@ -144,14 +144,14 @@ export default function Cart({
         role="dialog"
         aria-modal="true"
         aria-label={t.title}
-        className="relative flex h-full h-[100dvh] w-full max-w-md flex-col bg-white shadow-2xl"
+        className="relative flex h-full h-[100dvh] w-full max-w-md flex-col bg-[#170b15] text-[#fff0fa] border-l border-[#a33770] shadow-[-8px_0_40px_#ff258b33]"
       >
-        <header className="flex items-center justify-between border-b border-pink-100 bg-pink-50 p-5">
+        <header className="flex items-center justify-between border-b border-[#81335c] bg-[#291025] p-5">
           <div className="flex items-center gap-3">
             <ShoppingBag className="text-pink-500" size={26} />
 
             <div>
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-xl font-bold text-[#fff0fa]">
                 {t.title} ({products.length})
               </h2>
 
@@ -166,7 +166,7 @@ export default function Cart({
             onClick={onClose}
             disabled={busy}
             aria-label={t.close}
-            className="rounded-full bg-white p-2 text-gray-600"
+            className="rounded-full bg-[#42152f] p-2 text-[#ffd1e9]"
           >
             <X size={22} />
           </button>
@@ -177,7 +177,7 @@ export default function Cart({
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <Gift size={64} className="mb-5 text-pink-300" />
 
-              <h3 className="font-semibold text-gray-700">
+              <h3 className="font-semibold text-[#f8d5e8]">
                 {t.empty}
               </h3>
 
@@ -194,18 +194,18 @@ export default function Cart({
               {products.map(product => (
                 <div
                   key={product.id}
-                  className="flex items-center gap-3 rounded-2xl border border-pink-100 bg-pink-50/50 p-4"
+                  className="flex items-center gap-3 rounded-2xl border border-[#81335c] bg-[#291025] p-4"
                 >
-                  <div className="rounded-xl bg-pink-100 p-3">
+                  <div className="rounded-xl bg-[#511c3e] p-3">
                     <Gift size={24} className="text-pink-500" />
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-gray-800">
+                    <p className="font-semibold text-[#fff0fa]">
                       {product.name}
                     </p>
 
-                    <p className="text-sm font-bold text-pink-600">
+                    <p className="text-sm font-bold text-[#ff9bce]">
                       {throneLink(product) ? 'Throne' : '1,00 € (TEST)'}
                     </p>
                   </div>
@@ -215,7 +215,7 @@ export default function Cart({
                     disabled={busy}
                     onClick={() => onRemove(String(product.id))}
                     aria-label={t.remove}
-                    className="rounded-full p-2 text-gray-400 hover:bg-pink-100 hover:text-red-500"
+                    className="rounded-full p-2 text-[#e6a9ca] hover:bg-[#511c3e] hover:text-red-300"
                   >
                     <Trash2 size={19} />
                   </button>
@@ -226,12 +226,12 @@ export default function Cart({
         </div>
 
         {products.length > 0 && (
-          <footer className="space-y-4 border-t border-pink-100 bg-white p-5 pb-[max(20px,env(safe-area-inset-bottom))]">
+          <footer className="space-y-4 border-t max-h-[55dvh] overflow-y-auto border-[#81335c] bg-[#210d1e] p-5 pb-[max(20px,env(safe-area-inset-bottom))]">
             {throneProducts.length > 0 && (
               <div className="space-y-3">
-                <p className="text-sm text-gray-600">{externalNote}</p>
+                <p className="text-sm text-[#f3c9df]">{externalNote}</p>
                 {throneProducts.map(p => (
-                  <a key={p.id} href={throneLink(p)!} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center rounded-2xl bg-pink-600 px-4 py-3 text-center font-bold text-white">
+                  <a key={p.id} href={throneLink(p)!} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center rounded-2xl bg-gradient-to-r from-[#c21870] to-[#db2777] shadow-[0_0_16px_#ff258b55] px-4 py-3 text-center font-bold text-white">
                     <span>{externalText}</span><span className="text-xs font-normal">{p.name}</span>
                   </a>
                 ))}
@@ -241,7 +241,7 @@ export default function Cart({
             <div>
               <label
                 htmlFor="cart-sender"
-                className="mb-2 block text-sm font-medium text-gray-700"
+                className="mb-2 block text-sm font-medium text-[#f8d5e8]"
               >
                 {t.sender}
               </label>
@@ -254,16 +254,16 @@ export default function Cart({
                 maxLength={80}
                 onChange={e => setSender(e.target.value)}
                 placeholder={t.placeholder}
-                className="w-full rounded-xl border border-pink-200 px-4 py-3 outline-none focus:border-pink-500"
+                className="w-full rounded-xl border border-[#a33770] bg-[#170b15] text-white px-4 py-3 outline-none focus:border-pink-500"
               />
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="font-semibold text-gray-700">
+              <span className="font-semibold text-[#f8d5e8]">
                 {t.total}
               </span>
 
-              <span className="text-2xl font-bold text-pink-600">
+              <span className="text-2xl font-bold text-[#ff9bce]">
                 {total}
               </span>
             </div>
@@ -287,7 +287,7 @@ export default function Cart({
               {busy ? t.loading : t.checkout}
             </button>
 
-            <p className="text-center text-xs text-gray-500">
+            <p className="text-center text-xs text-[#e6a9ca]">
               {t.secure}
             </p>
 
