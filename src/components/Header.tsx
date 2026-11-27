@@ -4,6 +4,11 @@ import type { Language, Translations } from '../i18n/translations';
 
 interface HeaderProps {
   language: Language;
+  searchQuery: string;
+  onSearchChange: (q: string) => void;
+  onCatalog: () => void;
+  onReserved: () => void;
+  onReceived: () => void;
   onLanguageChange: (lang: Language) => void;
   favoritesCount: number;
   onSelectFavorites: () => void;
@@ -26,6 +31,7 @@ const CART_LABELS = {
 
 export function Header({
   language,
+  searchQuery, onSearchChange, onCatalog, onReserved, onReceived,
   onLanguageChange,
   favoritesCount,
   onSelectFavorites,
@@ -56,7 +62,7 @@ export function Header({
           className="hidden lg:flex items-center gap-6 text-sm font-medium text-[#6B4E5C]"
         >
           <a
-            href="#catalog"
+            href="#catalog" onClick={onCatalog}
             className="hover:text-[#C92A6D] transition-colors duration-150 whitespace-nowrap py-1 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C92A6D] rounded"
           >
             {t.nav.catalog}
@@ -70,6 +76,8 @@ export function Header({
             {t.nav.favorites}
           </button>
 
+          <button type="button" onClick={onReserved} className="whitespace-nowrap">{language === 'it' ? 'Prenotati' : language === 'ro' ? 'Rezervate' : 'Reserved'}</button>
+          <button type="button" onClick={onReceived} className="whitespace-nowrap">{language === 'it' ? 'Regali ricevuti' : language === 'ro' ? 'Cadouri primite' : 'Received gifts'}</button>
           <a
             href="#how-it-works"
             className="hover:text-[#C92A6D] transition-colors duration-150 whitespace-nowrap py-1 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C92A6D] rounded"
@@ -78,6 +86,7 @@ export function Header({
           </a>
         </nav>
 
+        <input className="wishlist-header-search hidden xl:block min-w-0 w-44 rounded-xl border px-3 py-2 text-sm" type="search" aria-label={t.controls.searchLabel} placeholder={t.controls.searchPlaceholder} value={searchQuery} onChange={e => {onSearchChange(e.target.value); onCatalog();}} />
         {/* Lingue, preferiti e carrello */}
 
         <div className="flex items-center gap-1.5 sm:gap-3 ml-auto">
