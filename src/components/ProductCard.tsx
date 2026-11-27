@@ -1,6 +1,5 @@
 
 import {
-  ArrowUpRight,
   Clock,
   Gift,
   ShoppingCart,
@@ -64,8 +63,8 @@ export function ProductCard({
   const storeLabel = product.store ?? t.card.storePending;
   const cartText = cartTranslations[language] || cartTranslations.it;
 
-  const throneUrl = product.url && /^https:\/\/throne\.com\/[a-zA-Z0-9_-]+\/item\/[0-9a-f-]{36}$/i.test(product.url) ? product.url : null;
-  const stripeAllowed = ['1','5','6','30'].includes(product.id);
+  const throneUrl = product.url && /^https:\/\/throne\.com\/sarah15petkovic\/item\/[0-9a-f-]{36}$/i.test(product.url) ? product.url : null;
+  const stripeAllowed = ['1','5','6','30'].includes(String(product.id));
   const throneNote = language === 'ro' ? 'Prețul final este afișat pe Throne.' : language === 'en' ? 'Final price shown on Throne.' : 'Prezzo finale indicato su Throne.';
 
   return (
@@ -195,33 +194,6 @@ export function ProductCard({
             </span>
           </button>
 
-          {/* Collegamento al negozio */}
-
-          {product.url ? (
-            <a
-              href={product.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${t.card.buyAriaPrefix} ${product.name}`}
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl bg-white text-[#7A5A69] border border-rose-200 hover:border-[#C92A6D]/50 hover:text-[#C92A6D] transition-colors duration-150 min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C92A6D] focus-visible:ring-offset-2"
-            >
-              <span>{cartText.external}</span>
-
-              <ArrowUpRight
-                className="w-4 h-4 shrink-0"
-                aria-hidden="true"
-              />
-            </a>
-          ) : (
-            <div className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl bg-[#FAF4F7] text-[#7A5A69] border border-rose-200/70 min-h-11">
-              <Clock
-                className="w-4 h-4 shrink-0 text-[#9E5B78]"
-                aria-hidden="true"
-              />
-
-              <span>{t.card.linkUpdating}</span>
-            </div>
-          )}
           </>)}
         </div>
       </div>
