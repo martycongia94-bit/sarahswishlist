@@ -375,7 +375,7 @@ export const PRODUCTS: Product[] = [
     brand: 'Breunor',
     category: 'gaming',
     store: 'Breunor',
-    url: 'https://breunor.com/products/balder?variant=42373892997367',
+    url: 'https://throne.com/sarah15petkovic/item/da1d887f-24e9-439c-8ca2-cf7ab1550ac7',
     image: '/products/26_breunor.webp',
     description: {
       it: 'PC desktop preassemblato Breunor Balder pronto all’uso per gaming fluido ad alte prestazioni.',
