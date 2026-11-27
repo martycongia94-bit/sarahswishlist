@@ -120,6 +120,12 @@ export default function App() {
     useState<string[]>(readStoredCart);
 
   const [cartOpen, setCartOpen] = useState(false);
+  const [cartToast, setCartToast] = useState<{product: WishlistProductRecord; stamp: number} | null>(null);
+  useEffect(() => {
+    if (!cartToast) return;
+    const timer = window.setTimeout(() => setCartToast(null), 5000);
+    return () => window.clearTimeout(timer);
+  }, [cartToast]);
 
   const [localReservations, setLocalReservations] =
     useState<LocalVisitorReservation[]>(
@@ -549,6 +555,8 @@ export default function App() {
       return;
     }
 
+    if (cartSet.has(id)) return;
+    setCartToast({product, stamp: Date.now()});
     setCartIds((previous) =>
       previous.includes(id)
         ? previous
@@ -1125,6 +1133,13 @@ export default function App() {
           t={t}
         />
 
+        <div role="status" aria-live="polite" className="wishlist-toast-region">
+          {cartToast && !cartOpen && <div key={cartToast.stamp} className="wishlist-cart-toast">
+            {cartToast.product.image && <img src={cartToast.product.image} alt="" referrerPolicy="no-referrer" onError={e=>{e.currentTarget.hidden=true;}} />}
+            <div className="wishlist-toast-copy"><strong>♡ {({it:'Regalo aggiunto al carrello',en:'Gift added to cart',ro:'Cadou adăugat în coș'})[language]}</strong><span>{cartToast.product.name}</span><button type="button" onClick={()=>{setCartToast(null);setCartOpen(true);}}>{({it:'Vedi carrello',en:'View cart',ro:'Vezi coșul'})[language]}</button></div>
+            <button type="button" className="wishlist-toast-close" aria-label={t.reservation.close} onClick={()=>setCartToast(null)}>×</button>
+          </div>}
+        </div>
         {/* Carrello */}
 
         <Cart
