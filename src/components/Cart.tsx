@@ -6,6 +6,7 @@ type CartProduct = {
   id: string | number;
   name: string;
   url?: string | null;
+  image?: string | null;
 };
 
 type CartProps = {
@@ -71,6 +72,7 @@ export default function Cart({
   products,
   onRemove,
 }: CartProps) {
+  const [failedImages, setFailedImages] = useState<Record<string, string>>({});
   const [sender, setSender] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -144,7 +146,7 @@ export default function Cart({
         role="dialog"
         aria-modal="true"
         aria-label={t.title}
-        className="relative flex h-full h-[100dvh] w-full max-w-md flex-col bg-[#170b15] text-[#fff0fa] border-l border-[#a33770] shadow-[-8px_0_40px_#ff258b33]"
+        className="relative flex h-full h-[100dvh] w-full max-w-md flex-col bg-[#170b15] text-[#fff0fa] border-l border-[#ff69b4] shadow-[-8px_0_40px_#ff258b55]"
       >
         <header className="flex items-center justify-between border-b border-[#81335c] bg-[#291025] p-5">
           <div className="flex items-center gap-3">
@@ -196,8 +198,10 @@ export default function Cart({
                   key={product.id}
                   className="flex items-center gap-3 rounded-2xl border border-[#81335c] bg-[#291025] p-4"
                 >
-                  <div className="rounded-xl bg-[#511c3e] p-3">
-                    <Gift size={24} className="text-pink-500" />
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#a33770] bg-[#511c3e]">
+                    {product.image && failedImages[String(product.id)] !== product.image ? (
+                      <img src={product.image} alt={product.name} referrerPolicy="no-referrer" className="h-full w-full object-contain bg-[#fff0fa]" onError={() => setFailedImages(prev => ({...prev, [String(product.id)]: product.image!}))} />
+                    ) : <Gift size={24} className="text-pink-400" />}
                   </div>
 
                   <div className="min-w-0 flex-1">
@@ -232,7 +236,7 @@ export default function Cart({
                 <p className="text-sm text-[#f3c9df]">{externalNote}</p>
                 {throneProducts.map(p => (
                   <a key={p.id} href={throneLink(p)!} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center rounded-2xl bg-gradient-to-r from-[#c21870] to-[#db2777] shadow-[0_0_16px_#ff258b55] px-4 py-3 text-center font-bold text-white">
-                    <span>{externalText}</span><span className="text-xs font-normal">{p.name}</span>
+                    <span className="flex items-center justify-center gap-2"><LockKeyhole size={17} aria-hidden="true" />{externalText}</span><span className="text-xs font-normal">{p.name}</span>
                   </a>
                 ))}
               </div>
@@ -295,6 +299,7 @@ export default function Cart({
               {t.test}
             </p>
             </>)}
+            <button type="button" onClick={onClose} disabled={busy} className="w-full rounded-xl border border-[#a33770] px-4 py-3 text-sm font-semibold text-[#ffd1e9] hover:bg-[#42152f]">{t.close}</button>
           </footer>
         )}
       </section>
