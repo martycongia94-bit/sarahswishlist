@@ -4,6 +4,12 @@ import type { CategoryId, SortOrder, Translations } from '../i18n/translations';
 
 interface CatalogControlsProps {
   searchQuery: string;
+  language: 'it' | 'en' | 'ro';
+  brands: string[];
+  brand: string;
+  onBrandChange: (v: string) => void;
+  availability: 'available' | 'reserved' | 'received';
+  onAvailabilityChange: (v: 'available' | 'reserved' | 'received') => void;
   onSearchChange: (q: string) => void;
   activeCategory: CategoryId;
   onCategoryChange: (cat: CategoryId) => void;
@@ -34,6 +40,7 @@ const CATEGORY_ORDER: CategoryId[] = [
 
 export function CatalogControls({
   searchQuery,
+  language, brands, brand, onBrandChange, availability, onAvailabilityChange,
   onSearchChange,
   activeCategory,
   onCategoryChange,
@@ -54,7 +61,7 @@ export function CatalogControls({
   const [copied, setCopied] = useState(false);
 
   const hasActiveFilter =
-    searchQuery.trim().length > 0 ||
+    brand !== '' || availability !== 'available' || searchQuery.trim().length > 0 ||
     activeCategory !== 'all' ||
     sortOrder !== 'default';
 
@@ -70,7 +77,7 @@ export function CatalogControls({
     <div className="space-y-5">
       {/* Search + Sort + Manage Reservation Row */}
       <div className="flex flex-col md:flex-row gap-3">
-        <div className="relative flex-1">
+        <div className="relative flex-1 xl:hidden">
           <label htmlFor="wishlist-search" className="sr-only">
             {t.controls.searchLabel}
           </label>
@@ -98,7 +105,7 @@ export function CatalogControls({
           )}
         </div>
 
-        <div className="relative md:w-56 shrink-0">
+        <div className="relative md:w-56 shrink-0 lg:hidden">
           <label htmlFor="wishlist-sort" className="sr-only">
             {t.controls.sortLabel}
           </label>
@@ -172,6 +179,13 @@ export function CatalogControls({
         })}
       </div>
 
+      <div className="wishlist-filter-panel space-y-3">
+        <h3 className="font-semibold">{language === 'it' ? 'Filtri' : language === 'ro' ? 'Filtre' : 'Filters'}</h3>
+        <fieldset className="space-y-2 text-sm"><legend className="sr-only">{language === 'it' ? 'Disponibilità' : language === 'ro' ? 'Disponibilitate' : 'Availability'}</legend>
+          {(['available','reserved','received'] as const).map((v,i)=><label key={v} className="flex items-center gap-2"><input type="radio" name="gift-availability" checked={availability===v} onChange={()=>onAvailabilityChange(v)} />{({it:['Disponibili','Prenotati','Ricevuti'],en:['Available','Reserved','Received'],ro:['Disponibile','Rezervate','Primite']}[language])[i]}</label>)}
+        </fieldset>
+        <label className="block text-sm">{language === 'it' ? 'Marca' : language === 'ro' ? 'Marcă' : 'Brand'}<select className="mt-1 w-full rounded-lg border p-2" value={brand} onChange={e=>onBrandChange(e.target.value)}><option value="">{language === 'it' ? 'Tutte' : language === 'ro' ? 'Toate' : 'All'}</option>{brands.map(b=><option key={b}>{b}</option>)}</select></label>
+      </div>
       {/* Results Summary & Reset */}
       <div className="flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm text-[#6B4E5C]">
         <p className="tabular-nums">
