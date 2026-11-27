@@ -158,3 +158,13 @@
 .wishlist-neon .wishlist-products article > div:last-child > div:last-child > a {background:#fff0f8;color:#71304e;border-color:#d88bb0;}
 .wishlist-neon .wishlist-products article > button:first-child {width:36px;height:36px;top:9px;right:9px;}
 @media(max-width:640px){.wishlist-neon .wishlist-products article h3{font-size:.85rem;}.wishlist-neon .wishlist-products article > div:first-of-type{padding:7px;}.wishlist-neon .wishlist-products article > div:last-child > p{-webkit-line-clamp:2;}}
+
+/* Four live counters and dark header controls */
+.wishlist-neon #top .wishlist-hero-stats{grid-template-columns:repeat(4,minmax(0,1fr));}
+.wishlist-neon > header > div{max-width:1800px;width:98%;}
+.wishlist-neon > header nav a[href="#catalog"]{background:linear-gradient(100deg,#b81765,#df3487);color:white;padding:9px 14px;border-radius:10px;}
+.wishlist-neon > header [role="group"]{background:#291025;border-color:#81335c;}
+.wishlist-neon > header [role="group"] button{color:#ffd1e9;}
+.wishlist-neon > header [role="group"] button[aria-pressed="true"]{background:#b81765;color:white;}
+.wishlist-neon > header button.bg-\[\#FDF2F6\],.wishlist-neon #top button{background:#291025;color:#ffd1e9;border-color:#a33770;}
+@media(max-width:1250px){.wishlist-neon #top .wishlist-hero-stats{grid-template-columns:repeat(2,minmax(0,1fr));}}
