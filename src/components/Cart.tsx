@@ -81,7 +81,7 @@ export default function Cart({
 
   const throneLink = (p: CartProduct) => p.url && /^https:\/\/throne\.com\/[a-zA-Z0-9_-]+\/item\/[0-9a-f-]{36}$/i.test(p.url) ? p.url : null;
   const throneProducts = products.filter(p => throneLink(p));
-  const testProducts = products.filter(p => !throneLink(p));
+  const testProducts = products.filter(p => !throneLink(p) && ['1','5','6','30'].includes(p.id));
   const externalText = language === 'ro' ? 'Continuă pe Throne' : language === 'en' ? 'Proceed to Throne' : 'Procedi al pagamento su Throne';
   const externalNote = language === 'ro' ? 'Cadourile Throne se cumpără separat. Prețul final este afișat pe Throne.' : language === 'en' ? 'Throne gifts are purchased individually. Final prices are shown on Throne.' : 'I regali Throne si acquistano singolarmente. Il prezzo finale è indicato su Throne.';
   const total = new Intl.NumberFormat(
@@ -210,7 +210,7 @@ export default function Cart({
                     </p>
 
                     <p className="text-sm font-bold text-[#ff9bce]">
-                      {throneLink(product) ? 'Throne' : '1,00 € (TEST)'}
+                      {throneLink(product) ? 'Throne' : ['1','5','6','30'].includes(product.id) ? '1,00 € (TEST)' : language === 'it' ? 'Link in aggiornamento' : language === 'ro' ? 'Link în actualizare' : 'Link pending'}
                     </p>
                   </div>
 
