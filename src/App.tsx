@@ -130,6 +130,8 @@ export default function App() {
     useState<CategoryId>('all');
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [brand, setBrand] = useState('');
+  const [availability, setAvailability] = useState<'available'|'reserved'|'received'>('available');
 
   const [sortOrder, setSortOrder] =
     useState<SortOrder>('default');
@@ -470,7 +472,9 @@ export default function App() {
     const normalizedQuery =
       searchQuery.trim().toLocaleLowerCase(language);
 
-    const matching = visibleCatalog.filter((product) => {
+    const source = availability === 'available' ? visibleCatalog : catalogProducts.filter(p => availability === 'received' ? p.status === 'received' : p.status === 'reserved' && !isProductAvailableToVisitors(p, nowMs));
+    const matching = source.filter((product) => {
+      if (brand && product.brand !== brand) return false;
       if (
         activeCategory === 'favorites' &&
         !favoriteSet.has(product.id)
@@ -520,6 +524,7 @@ export default function App() {
     return matching;
   }, [
     activeCategory,
+    availability, brand, catalogProducts, nowMs,
     favoriteSet,
     language,
     searchQuery,
@@ -604,6 +609,7 @@ export default function App() {
   };
 
   const handleSelectFavorites = () => {
+    setAvailability('available');
     setActiveCategory('favorites');
 
     catalogRef.current?.scrollIntoView({
@@ -614,6 +620,7 @@ export default function App() {
 
   const handleResetFilters = () => {
     setSearchQuery('');
+    setBrand(''); setAvailability('available');
     setActiveCategory('all');
     setSortOrder('default');
   };
@@ -876,6 +883,10 @@ export default function App() {
       <div className="wishlist-neon min-h-screen flex flex-col bg-[#FFFBFD] text-[#2D1B24]">
 
         <Header
+          searchQuery={searchQuery} onSearchChange={setSearchQuery}
+          onCatalog={()=>{setAvailability('available');setActiveCategory('all');}}
+          onReserved={()=>{handleResetFilters();setAvailability('reserved');catalogRef.current?.scrollIntoView({block:'start'});}}
+          onReceived={()=>{handleResetFilters();setAvailability('received');catalogRef.current?.scrollIntoView({block:'start'});}}
           language={language}
           onLanguageChange={setLanguage}
           favoritesCount={categoryCounts.favorites}
@@ -940,6 +951,8 @@ export default function App() {
             <div className="wishlist-sidebar">
             <h2 className="wishlist-section-title">♡ {language === "it" ? "Categorie" : language === "ro" ? "Categorii" : "Categories"}</h2>
             <CatalogControls
+              language={language} brand={brand} onBrandChange={setBrand} brands={Array.from(new Set(catalogProducts.map(p=>p.brand).filter(Boolean))).sort()}
+              availability={availability} onAvailabilityChange={setAvailability}
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
               activeCategory={activeCategory}
@@ -963,7 +976,7 @@ export default function App() {
             />
             </div>
             <div className="wishlist-results">
-            <h2 className="wishlist-section-title">{t.nav.catalog}</h2>
+            <div className="wishlist-catalog-heading"><div><h2 className="wishlist-section-title">{t.nav.catalog}</h2><p>{language==='it'?'Scegli un regalo per Sarah ♡':language==='ro'?'Alege un cadou pentru Sarah ♡':'Choose a gift for Sarah ♡'}</p></div><select className="hidden lg:block rounded-xl border p-2" aria-label={t.controls.sortLabel} value={sortOrder} onChange={e=>setSortOrder(e.target.value as SortOrder)}><option value="default">{t.controls.sortDefault}</option><option value="az">{t.controls.sortAz}</option><option value="za">{t.controls.sortZa}</option></select></div>
             {!statusReady && (
               <div
                 role="status"
@@ -1029,7 +1042,7 @@ export default function App() {
               <div className="wishlist-products mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
                 {filteredProducts.map((product) => (
-                  <ProductCard
+                  availability !== 'available' ? <article key={product.id} className="overflow-hidden rounded-xl border border-pink-400 bg-[#291025] p-3"><img src={product.image || undefined} alt={product.name} className="aspect-square w-full object-contain"/><h3>{product.name}</h3><p>{availability==='reserved' ? (language==='it'?'Prenotato':language==='ro'?'Rezervat':'Reserved') : (language==='it'?'Ricevuto':language==='ro'?'Primit':'Received')}</p></article> : <ProductCard
                     key={product.id}
                     product={product}
                     language={language}
