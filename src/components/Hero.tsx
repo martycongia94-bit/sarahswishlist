@@ -1,9 +1,10 @@
-import { Crown, Gift, Heart, ShoppingCart } from 'lucide-react';
+import { Crown, Gift, Heart, ShoppingCart, CheckCircle } from 'lucide-react';
 import heroImage from '../assets/images/hero_wishlist_banner_1794585021765.jpg';
 import type { Translations } from '../i18n/translations';
 
 interface HeroProps {
   totalCount: number;
+  purchasedCount: number;
   cartCount: number;
   reservedCount: number;
   language: "it" | "en" | "ro";
@@ -14,6 +15,7 @@ interface HeroProps {
 
 export function Hero({
   totalCount,
+  purchasedCount,
   cartCount,
   reservedCount,
   language,
@@ -21,7 +23,7 @@ export function Hero({
   onSelectFavorites,
   t,
 }: HeroProps) {
-  const labels = {it:["Nel catalogo","Prenotati","Nel carrello"],en:["In catalog","Reserved","In cart"],ro:["În catalog","Rezervate","În coș"]}[language];
+  const labels = {it:["Nel catalogo","Acquistati","Prenotati","Nel carrello"],en:["In catalog","Purchased","Reserved","In cart"],ro:["În catalog","Cumpărate","Rezervate","În coș"]}[language];
   return (
     <section
       id="top"
@@ -55,7 +57,7 @@ export function Hero({
             </p>
 
             <div className="wishlist-hero-stats" aria-label={t.nav.catalog}>
-              {[totalCount,reservedCount,cartCount].map((count,i)=><div key={i}>{i === 0 ? <Gift aria-hidden="true"/> : i === 1 ? <Heart aria-hidden="true"/> : <ShoppingCart aria-hidden="true"/>}<strong>{count}</strong><span>{labels[i]}</span></div>)}
+              {[totalCount,purchasedCount,reservedCount,cartCount].map((count,i)=><div key={i}>{i === 0 ? <Gift aria-hidden="true"/> : i === 1 ? <CheckCircle aria-hidden="true"/> : i === 2 ? <Heart aria-hidden="true"/> : <ShoppingCart aria-hidden="true"/>}<strong>{count}</strong><span>{labels[i]}</span></div>)}
             </div>
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <a
