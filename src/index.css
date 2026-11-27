@@ -212,3 +212,31 @@
 .wishlist-neon .wishlist-products article > div:last-child > div:last-child > button:nth-of-type(2):not(:disabled){background:linear-gradient(100deg,#9333ea,#7e22ce);color:white;border-color:#c084fc;}
 .wishlist-neon .wishlist-sidebar{box-shadow:0 0 16px #ff258b44,inset 0 0 10px #ff258b22;}
 @media(min-width:1450px){.wishlist-neon > main{grid-template-columns:240px minmax(0,1fr);width:98%;gap:10px 14px;}.wishlist-neon #top h1{font-size:clamp(3rem,4.6vw,5rem);}.wishlist-neon #top .lg\\:col-span-7 > div:first-child{display:none;}.wishlist-neon #top .lg\\:col-span-7 > p{text-align:center;}.wishlist-neon #top .lg\\:col-span-7 > p:first-of-type{font-size:1.55rem;}.wishlist-neon #top .lg\\:col-span-7 > p:nth-of-type(2){font-size:1.1rem;}.wishlist-neon #top .lg\\:col-span-7 > div:last-child{display:none;}.wishlist-neon #top .wishlist-portrait > div{min-height:300px;}.wishlist-neon #top .wishlist-portrait img{mask-image:linear-gradient(to right,transparent,#000 24%,#000 95%,transparent);}.wishlist-neon .wishlist-header-search{max-width:220px;}.wishlist-neon .wishlist-products article > div:first-of-type{height:170px;}.wishlist-neon .wishlist-products article h3{font-size:1rem;}}
+
+/* Approved reference: layered neon atmosphere and integrated portrait. */
+.wishlist-neon #top {isolation:isolate;background:#140610;border-color:#ff8ec8;box-shadow:0 0 18px #ff369477,inset 0 0 18px #ff369455;}
+.wishlist-neon #top::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 3% 95%,#ff65bb99,transparent 19%),radial-gradient(ellipse at 20% 105%,#ff2b9ccc,transparent 26%),radial-gradient(ellipse at 45% 105%,#ff8dce88,transparent 23%),radial-gradient(ellipse at 90% 105%,#ff2b9ccc,transparent 25%),radial-gradient(ellipse at 100% 78%,#ff59b877,transparent 20%),radial-gradient(ellipse at 65% 45%,#581032,transparent 70%);}
+.wishlist-neon #top::after{content:"";inset:0;opacity:1;animation:none;background-image:radial-gradient(circle at 3% 23%,white 0 1px,#ff55ad 2px,transparent 7px),radial-gradient(circle at 18% 8%,white 0 1px,#ff55ad 2px,transparent 5px),radial-gradient(circle at 45% 12%,white 0 1px,#ff55ad 2px,transparent 6px),radial-gradient(circle at 82% 8%,white 0 1px,#ff55ad 2px,transparent 9px),radial-gradient(circle at 96% 70%,white 0 1px,#ff55ad 2px,transparent 8px),radial-gradient(circle at 6% 88%,white 0 1px,#ff55ad 2px,transparent 7px),radial-gradient(circle at 48% 94%,white 0 1px,#ff55ad 2px,transparent 6px);}
+.wishlist-neon #top .wishlist-portrait > div::after{background:linear-gradient(to top,#ff4ca84d,transparent 24%);}
+.wishlist-neon #top .wishlist-portrait::after{content:"♡";font-size:clamp(45px,6vw,90px);right:14%;top:8%;line-height:1;}
+.wishlist-neon #top .wishlist-hero-stats > div{grid-template-columns:36px 1fr;gap:2px 7px;background:linear-gradient(135deg,#511332aa,#23091dbb);box-shadow:0 0 12px #ff389b77,inset 0 0 12px #ff389b44;}
+.wishlist-neon #top .wishlist-hero-stats svg{width:32px;height:32px;filter:drop-shadow(0 0 6px #ff258b);}
+.wishlist-neon .wishlist-section-title{font-size:clamp(1.5rem,2.2vw,2.2rem);line-height:1.15;}
+@media(min-width:1024px){
+.wishlist-neon > main > #top{padding:0;min-height:330px;}
+.wishlist-neon #top > div{padding:18px 20px;}
+.wishlist-neon #top > div > div{position:static;display:block;}
+.wishlist-neon #top .lg\:col-span-7{position:relative;z-index:2;width:57%;min-height:294px;justify-content:center;}
+.wishlist-neon #top .lg\:col-span-7 > div:first-child{display:none;}
+.wishlist-neon #top .lg\:col-span-7 > div:last-child{display:none;}
+.wishlist-neon #top h1{font-size:clamp(2.8rem,4.7vw,5rem);text-align:center;line-height:1.15;}
+.wishlist-neon #top .wishlist-crown{width:48px;height:48px;margin-inline:auto;filter:drop-shadow(0 0 8px #ff258b);}
+.wishlist-neon #top .lg\:col-span-7 > p{margin:5px auto 0;text-align:center;max-width:90%;font-size:clamp(1rem,1.4vw,1.35rem);}
+.wishlist-neon #top .lg\:col-span-7 > p:first-of-type{font-size:clamp(1.25rem,1.9vw,1.8rem);}
+.wishlist-neon #top .wishlist-portrait{position:absolute;inset:0 0 0 45%;z-index:0;}
+.wishlist-neon #top .wishlist-portrait > div{height:100%;min-height:0;}
+.wishlist-neon #top .wishlist-portrait img{object-position:center 30%;mask-image:linear-gradient(to right,transparent 0%,#000 26%,#000 94%,transparent 100%);}
+.wishlist-neon #top .wishlist-hero-stats{margin-top:15px;grid-template-columns:repeat(4,minmax(0,1fr));}
+.wishlist-neon .wishlist-products article > div:first-of-type{height:clamp(155px,12vw,195px);padding:5px;}
+}
+@media(min-width:1024px) and (max-width:1250px){.wishlist-neon #top .wishlist-hero-stats{grid-template-columns:repeat(2,minmax(0,1fr));}}
