@@ -84,6 +84,7 @@ export function Header({
           >
             {t.nav.howItWorks}
           </a>
+          <a href="#faq" className="whitespace-nowrap hover:text-pink-400">FAQ</a>
         </nav>
 
         <input className="wishlist-header-search hidden xl:block min-w-0 w-44 rounded-xl border px-3 py-2 text-sm" type="search" aria-label={t.controls.searchLabel} placeholder={t.controls.searchPlaceholder} value={searchQuery} onChange={e => {onSearchChange(e.target.value); onCatalog();}} />
