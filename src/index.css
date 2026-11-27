@@ -240,3 +240,14 @@
 .wishlist-neon .wishlist-products article > div:first-of-type{height:clamp(155px,12vw,195px);padding:5px;}
 }
 @media(min-width:1024px) and (max-width:1250px){.wishlist-neon #top .wishlist-hero-stats{grid-template-columns:repeat(2,minmax(0,1fr));}}
+
+/* Final portrait framing and luminous cloud accents */
+.wishlist-neon #top .wishlist-portrait > div::after{background:radial-gradient(ellipse at 8% 100%,#ff59b999,transparent 36%),linear-gradient(to top,#ff379b77,transparent 23%);pointer-events:none;}
+.wishlist-neon #top::before{background:radial-gradient(ellipse at 4% 100%,#ff9bd7aa,transparent 13%),radial-gradient(ellipse at 13% 110%,#ff43aacc,transparent 23%),radial-gradient(ellipse at 30% 105%,#ff9bd799,transparent 17%),radial-gradient(ellipse at 49% 110%,#ff43aacc,transparent 22%),radial-gradient(ellipse at 90% 110%,#ff43aacc,transparent 28%),radial-gradient(ellipse at 60% 50%,#42102d,transparent 70%);}
+.wishlist-neon #top::after{pointer-events:none;z-index:1;background-image:radial-gradient(ellipse 2px 15px at 5% 22%,#fff,transparent),radial-gradient(ellipse 15px 2px at 5% 22%,#fff,transparent),radial-gradient(circle at 5% 22%,#ff4eaeaa,transparent 18px),radial-gradient(ellipse 2px 13px at 82% 9%,#fff,transparent),radial-gradient(ellipse 13px 2px at 82% 9%,#fff,transparent),radial-gradient(circle at 82% 9%,#ff4eaeaa,transparent 18px),radial-gradient(ellipse 1px 9px at 96% 75%,#fff,transparent),radial-gradient(ellipse 9px 1px at 96% 75%,#fff,transparent),radial-gradient(circle at 96% 75%,#ff4eaeaa,transparent 14px),radial-gradient(circle at 22% 8%,#fff 0 1px,#ff57b5 2px,transparent 5px),radial-gradient(circle at 46% 14%,#fff 0 1px,#ff57b5 2px,transparent 5px);}
+@media(min-width:1024px){
+.wishlist-neon #top .wishlist-portrait img{object-position:center top;transform:none;}
+.wishlist-neon #top .wishlist-portrait{inset:0 0 0 47%;}
+.wishlist-neon #top .wishlist-portrait > div{overflow:hidden;}
+.wishlist-neon #top .wishlist-portrait img{mask-image:linear-gradient(to right,transparent,#000 28%,#000 97%,transparent);}
+}
