@@ -533,7 +533,7 @@ export const PRODUCTS: Product[] = [
     brand: 'Demon Slayer',
     category: 'accessories',
     store: 'Amazon.it',
-    url: 'https://www.amazon.it/dp/B085W4XSG4',
+    url: 'https://throne.com/sarah15petkovic/item/f5001034-057e-4791-8f67-61b189b5848e',
     image: '/products/37_mousepad.jpg',
     description: {
       it: 'Tappetino mouse a tema Demon Slayer con superficie liscia e base antiscivolo per la scrivania.',
@@ -547,7 +547,7 @@ export const PRODUCTS: Product[] = [
     brand: 'lachineuse',
     category: 'accessories',
     store: 'Amazon.it',
-    url: 'https://www.amazon.it/dp/B0CCP2DDPR',
+    url: 'https://throne.com/sarah15petkovic/item/741f1525-45fc-42ae-9895-81abf447c0ea',
     image: '/products/38_cat_mug.jpg',
     description: {
       it: 'Deliziosa tazza in porcellana color malva/viola da 450 ml con coperchio a forma di gatto e cucchiaino abbinato.',
